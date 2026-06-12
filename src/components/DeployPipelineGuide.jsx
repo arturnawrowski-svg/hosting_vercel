@@ -27,6 +27,7 @@ import {
   Clock,
   Settings,
   MousePointerClick,
+  Lock,
 } from 'lucide-react';
 
 const BrowserFrame = ({ url, children }) => (
@@ -464,19 +465,42 @@ const HintPanel = ({ hint, open }) => {
   );
 };
 
-const StepRow = ({ text, checked, onToggle, hint, hintOpen, onToggleHint, meta }) => (
+const StepRow = ({ text, checked, onToggle, hint, hintOpen, onToggleHint, meta, disabled }) => (
   <div className="group/step">
-    <div className="flex items-start gap-2 py-2 px-2 -mx-2 rounded-md hover:bg-white/[0.025] transition-colors duration-150">
-      <button onClick={onToggle} className="mt-0.5 flex-shrink-0" aria-label={checked ? 'Oznacz jako niewykonane' : 'Oznacz jako wykonane'}>
-        <div className={`w-[18px] h-[18px] rounded-[5px] border flex items-center justify-center transition-all duration-200 ease-out ${checked ? 'bg-indigo-500 border-indigo-500 shadow-[0_0_0_3px_rgba(99,102,241,0.15)]' : 'border-zinc-700 bg-zinc-950 group-hover/step:border-zinc-500'}`}>
-          <Check className={`w-3 h-3 text-white transition-all duration-200 ${checked ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} strokeWidth={3.5} />
+    <div className={`flex items-start gap-2 py-2 px-2 -mx-2 rounded-md transition-colors duration-150 ${!disabled ? 'hover:bg-white/[0.025]' : ''}`}>
+      <button
+        onClick={disabled ? undefined : onToggle}
+        className={`mt-0.5 flex-shrink-0 ${disabled ? 'cursor-not-allowed' : ''}`}
+        aria-label={disabled ? 'Zablokowane' : checked ? 'Oznacz jako niewykonane' : 'Oznacz jako wykonane'}
+      >
+        <div className={`w-[18px] h-[18px] rounded-[5px] border flex items-center justify-center transition-all duration-200 ease-out ${
+          disabled
+            ? 'border-zinc-800 bg-zinc-950/50'
+            : checked
+              ? 'bg-indigo-500 border-indigo-500 shadow-[0_0_0_3px_rgba(99,102,241,0.15)]'
+              : 'border-zinc-700 bg-zinc-950 group-hover/step:border-zinc-500'
+        }`}>
+          {disabled
+            ? <Lock className="w-2.5 h-2.5 text-zinc-700" strokeWidth={2.5} />
+            : <Check className={`w-3 h-3 text-white transition-all duration-200 ${checked ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} strokeWidth={3.5} />
+          }
         </div>
       </button>
-      <button onClick={onToggle} className={`flex-1 text-left text-[13.5px] leading-relaxed transition-all duration-200 ${checked ? 'text-zinc-500 line-through decoration-zinc-700' : 'text-zinc-300'}`}>
+      <button
+        onClick={disabled ? undefined : onToggle}
+        disabled={disabled}
+        className={`flex-1 text-left text-[13.5px] leading-relaxed transition-all duration-200 ${
+          disabled
+            ? 'text-zinc-600 cursor-not-allowed'
+            : checked
+              ? 'text-zinc-500 line-through decoration-zinc-700'
+              : 'text-zinc-300'
+        }`}
+      >
         {text}
       </button>
       {meta && (
-        <span className={`mt-0.5 flex-shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9.5px] font-medium ${meta.color} ${meta.bg}`}>
+        <span className={`mt-0.5 flex-shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9.5px] font-medium ${disabled ? 'text-zinc-700 bg-zinc-900/30' : `${meta.color} ${meta.bg}`}`}>
           <meta.Icon className="w-3 h-3" strokeWidth={1.75} />
           <span className="hidden sm:inline">{meta.label}</span>
         </span>
@@ -619,26 +643,38 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-const PhaseCard = ({ phase, status, checked, onToggle, openHints, onToggleHint, index }) => {
+const PhaseCard = ({ phase, status, checked, onToggle, openHints, onToggleHint, index, isLocked }) => {
   const Icon = phase.icon;
   const done = status === 'done';
   return (
-    <div className="relative pl-12 sm:pl-16" style={{ animation: `fadeUp 0.5s ease-out ${0.1 * index + 0.3}s both` }}>
+    <div className={`relative pl-12 sm:pl-16 transition-opacity duration-500 ${isLocked ? 'opacity-50' : 'opacity-100'}`} style={{ animation: `fadeUp 0.5s ease-out ${0.1 * index + 0.3}s both` }}>
       <div className="absolute left-0 top-6 flex flex-col items-center">
-        <div className={`relative w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center font-mono text-[11px] sm:text-[12px] font-semibold transition-all duration-300 ${done ? 'bg-indigo-500 text-white shadow-[0_0_20px_-2px_rgba(99,102,241,0.6)]' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'}`}>
-          {done ? <Check className="w-4 h-4" strokeWidth={3} /> : phase.number}
+        <div className={`relative w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center font-mono text-[11px] sm:text-[12px] font-semibold transition-all duration-300 ${
+          done
+            ? 'bg-indigo-500 text-white shadow-[0_0_20px_-2px_rgba(99,102,241,0.6)]'
+            : isLocked
+              ? 'bg-zinc-950 text-zinc-600 border border-zinc-800/50'
+              : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
+        }`}>
+          {done ? <Check className="w-4 h-4" strokeWidth={3} /> : isLocked ? <Lock className="w-4 h-4" strokeWidth={2} /> : phase.number}
         </div>
       </div>
-      <Card className={`group relative overflow-hidden border bg-gradient-to-br from-zinc-900/60 to-zinc-950/80 backdrop-blur-sm transition-all duration-300 ${done ? 'border-indigo-500/40 shadow-[0_0_40px_-12px_rgba(99,102,241,0.4)]' : 'border-zinc-800/80 hover:border-zinc-700 hover:shadow-[0_0_40px_-15px_rgba(99,102,241,0.35)]'}`}>
+      <Card className={`group relative overflow-hidden border bg-gradient-to-br backdrop-blur-sm transition-all duration-300 ${
+        done
+          ? 'from-zinc-900/60 to-zinc-950/80 border-indigo-500/40 shadow-[0_0_40px_-12px_rgba(99,102,241,0.4)]'
+          : isLocked
+            ? 'from-zinc-950/40 to-zinc-950/60 border-zinc-900/50'
+            : 'from-zinc-900/60 to-zinc-950/80 border-zinc-800/80 hover:border-zinc-700 hover:shadow-[0_0_40px_-15px_rgba(99,102,241,0.35)]'
+      }`}>
         <div className={`absolute -right-20 -top-20 w-48 h-48 rounded-full blur-3xl transition-opacity duration-500 ${done ? 'bg-indigo-500/10 opacity-100' : 'bg-indigo-500/5 opacity-0 group-hover:opacity-100'}`} />
         <div className="relative flex items-start justify-between gap-4 p-5 sm:p-6 pb-4">
           <div className="flex items-start gap-3 sm:gap-4 min-w-0">
-            <Badge variant="outline" className="bg-indigo-500/10 border-indigo-500/30 text-indigo-300 font-mono text-[10.5px] px-2 py-0.5 rounded-md flex-shrink-0">
+            <Badge variant="outline" className={`font-mono text-[10.5px] px-2 py-0.5 rounded-md flex-shrink-0 ${isLocked ? 'bg-zinc-900/50 border-zinc-800 text-zinc-600' : 'bg-indigo-500/10 border-indigo-500/30 text-indigo-300'}`}>
               KROK {phase.number}
             </Badge>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-[15px] sm:text-base font-semibold text-zinc-100 tracking-tight">{phase.platform}</h3>
+                <h3 className={`text-[15px] sm:text-base font-semibold tracking-tight ${isLocked ? 'text-zinc-500' : 'text-zinc-100'}`}>{phase.platform}</h3>
                 {phase.badge && (
                   <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 uppercase tracking-wider">{phase.badge}</span>
                 )}
@@ -648,13 +684,31 @@ const PhaseCard = ({ phase, status, checked, onToggle, openHints, onToggleHint, 
             </div>
           </div>
           <div className="flex items-center gap-3 flex-shrink-0">
-            <div className="hidden sm:block"><StatusBadge status={status} /></div>
+            <div className="hidden sm:block">
+              {isLocked
+                ? <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10.5px] font-medium uppercase tracking-wider border bg-zinc-900/60 text-zinc-600 border-zinc-800/50"><Lock className="w-3 h-3" strokeWidth={2} />Zablokowane</div>
+                : <StatusBadge status={status} />
+              }
+            </div>
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-colors duration-300 ${done ? 'bg-indigo-500/10 border-indigo-500/30' : 'bg-zinc-900 border-zinc-800'}`}>
-              <Icon className={`w-5 h-5 transition-colors duration-300 ${done ? 'text-indigo-300' : 'text-zinc-400'}`} strokeWidth={1.5} />
+              <Icon className={`w-5 h-5 transition-colors duration-300 ${done ? 'text-indigo-300' : isLocked ? 'text-zinc-600' : 'text-zinc-400'}`} strokeWidth={1.5} />
             </div>
           </div>
         </div>
-        <div className="sm:hidden px-5 pb-2"><StatusBadge status={status} /></div>
+        <div className="sm:hidden px-5 pb-2">
+          {isLocked
+            ? <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10.5px] font-medium uppercase tracking-wider border bg-zinc-900/60 text-zinc-600 border-zinc-800/50"><Lock className="w-3 h-3" strokeWidth={2} />Zablokowane</div>
+            : <StatusBadge status={status} />
+          }
+        </div>
+        {isLocked && (
+          <div className="mx-5 sm:mx-6 mb-3 flex items-center gap-2 px-3 py-2 rounded-md bg-zinc-900/60 border border-zinc-800/50">
+            <Lock className="w-3 h-3 text-zinc-600 flex-shrink-0" strokeWidth={2} />
+            <span className="text-[11.5px] text-zinc-600">
+              Ukończ fazę {String(index).padStart(2, '0')}, żeby odblokować
+            </span>
+          </div>
+        )}
         <div className="h-px bg-gradient-to-r from-transparent via-zinc-800 to-transparent mx-5 sm:mx-6" />
         <div className="px-5 sm:px-6 py-4 space-y-0.5">
           {phase.steps.map((step, i) => {
@@ -669,6 +723,7 @@ const PhaseCard = ({ phase, status, checked, onToggle, openHints, onToggleHint, 
                 hintOpen={!!openHints[key]}
                 onToggleHint={() => onToggleHint(key)}
                 meta={stepMeta[key]}
+                disabled={isLocked}
               />
             );
           })}
@@ -718,6 +773,19 @@ export default function DeployPipelineGuide() {
     if (done === 0) return 'pending';
     if (done === keys.length) return 'done';
     return 'progress';
+  };
+
+  const isPhaseDone = (phase) => {
+    const keys = phase.steps.map((_, i) => `${phase.id}-${i}`);
+    return keys.every((k) => !!checked[k]);
+  };
+
+  const getPhaseIsLocked = (index) => {
+    if (index === 0) return false;
+    for (let i = 0; i < index; i++) {
+      if (!isPhaseDone(phases[i])) return true;
+    }
+    return false;
   };
 
   const allDone = completedSteps === totalSteps && totalSteps > 0;
@@ -827,6 +895,7 @@ export default function DeployPipelineGuide() {
                   openHints={openHints}
                   onToggleHint={toggleHint}
                   index={idx}
+                  isLocked={getPhaseIsLocked(idx)}
                 />
               </React.Fragment>
             ))}
