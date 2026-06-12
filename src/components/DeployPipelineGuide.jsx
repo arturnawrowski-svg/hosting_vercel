@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -544,6 +544,22 @@ const phases = [
   },
 ];
 
+const ALL_STEP_KEYS = phases.flatMap((p) => p.steps.map((_, i) => `${p.id}-${i}`));
+
+function encodeChecked(checked) {
+  let bits = 0;
+  ALL_STEP_KEYS.forEach((key, i) => { if (checked[key]) bits |= 1 << i; });
+  return bits.toString(16);
+}
+
+function decodeChecked(s) {
+  const bits = parseInt(s, 16);
+  if (isNaN(bits)) return {};
+  const out = {};
+  ALL_STEP_KEYS.forEach((key, i) => { if (bits & (1 << i)) out[key] = true; });
+  return out;
+}
+
 const PipelineNode = ({ icon: Icon, label, delay = 0 }) => (
   <div className="flex flex-col items-center gap-2.5" style={{ animation: `fadeUp 0.6s ease-out ${delay}s both` }}>
     <div className="relative">
@@ -635,16 +651,30 @@ const quickLinks = [
 ];
 
 export default function DeployPipelineGuide() {
-  const [checked, setChecked] = useState({});
+  const [checked, setChecked] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.hash.slice(1));
+      const s = params.get('s');
+      if (s) return decodeChecked(s);
+    } catch {}
+    return {};
+  });
   const [openHints, setOpenHints] = useState({});
-
-  const allStepKeys = useMemo(() => phases.flatMap((p) => p.steps.map((_, i) => `${p.id}-${i}`)), []);
+  const [copied, setCopied] = useState(false);
 
   const toggleStep = (key) => setChecked((prev) => ({ ...prev, [key]: !prev[key] }));
   const toggleHint = (key) => setOpenHints((prev) => ({ ...prev, [key]: !prev[key] }));
-  const reset = () => { setChecked({}); setOpenHints({}); };
+  const reset = () => { setChecked({}); setOpenHints({}); window.history.replaceState(null, '', window.location.pathname); };
 
-  const totalSteps = allStepKeys.length;
+  const share = () => {
+    const url = `${window.location.href.split('#')[0]}#s=${encodeChecked(checked)}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  const totalSteps = ALL_STEP_KEYS.length;
   const completedSteps = Object.values(checked).filter(Boolean).length;
   const progress = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
 
@@ -695,6 +725,10 @@ export default function DeployPipelineGuide() {
               </div>
               <Progress value={progress} className="h-1.5 bg-zinc-900 [&>div]:bg-gradient-to-r [&>div]:from-indigo-500 [&>div]:to-indigo-400 [&>div]:transition-all [&>div]:duration-500" />
             </div>
+            <Button onClick={share} variant="outline" size="sm" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 px-3 flex-shrink-0">
+              {copied ? <Check className="w-3 h-3 mr-1.5 text-emerald-400" /> : <Copy className="w-3 h-3 mr-1.5" />}
+              <span className="hidden sm:inline">{copied ? 'Skopiowano!' : 'Udostępnij'}</span>
+            </Button>
             <Button onClick={reset} variant="outline" size="sm" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 px-3 flex-shrink-0">
               <RotateCcw className="w-3 h-3 mr-1.5" />
               <span className="hidden sm:inline">Reset</span>
@@ -789,7 +823,8 @@ export default function DeployPipelineGuide() {
           <div className="text-[11.5px] text-zinc-600 whitespace-nowrap">
             Created by{' '}
             <a href="mailto:artur.nawrowski@gmail.com" className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">ArChi</a>
-            {' '}for WebToLearn
+            {' '}for{' '}
+            <a href="https://webtolearn.pl" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">WebToLearn</a>
           </div>
         </footer>
       </main>
