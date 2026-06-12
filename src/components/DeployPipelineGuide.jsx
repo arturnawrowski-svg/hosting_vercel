@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PdfGuide from './PdfGuide';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -29,6 +30,7 @@ import {
   MousePointerClick,
   Lock,
   Zap,
+  BookOpen,
 } from 'lucide-react';
 
 const BrowserFrame = ({ url, children }) => (
@@ -837,6 +839,7 @@ export default function DeployPipelineGuide() {
   });
   const [openHints, setOpenHints] = useState({});
   const [copied, setCopied] = useState(false);
+  const [showPdf, setShowPdf] = useState(false);
   const [vercelToken, setVercelToken] = useState(() => localStorage.getItem('vercel_token') || '');
   const [vercelApiStatus, setVercelApiStatus] = useState('idle');
   const [vercelApiData, setVercelApiData] = useState(null);
@@ -917,6 +920,8 @@ export default function DeployPipelineGuide() {
   const phaseIsLocked = (idx) => getPhaseIsLocked(idx);
 
   return (
+    <>
+    {showPdf && <PdfGuide onClose={() => setShowPdf(false)} />}
     <div
       className="min-h-screen bg-[#0a0a0a] text-zinc-100 antialiased relative overflow-x-hidden"
       style={{ fontFamily: '"EB Garamond", Garamond, "Times New Roman", ui-serif, serif' }}
@@ -953,6 +958,10 @@ export default function DeployPipelineGuide() {
               </div>
               <Progress value={progress} className="h-1.5 bg-zinc-900 [&>div]:bg-gradient-to-r [&>div]:from-indigo-500 [&>div]:to-indigo-400 [&>div]:transition-all [&>div]:duration-500" />
             </div>
+            <Button onClick={() => setShowPdf(true)} variant="outline" size="sm" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 px-3 flex-shrink-0">
+              <BookOpen className="w-3 h-3 mr-1.5" />
+              <span className="hidden sm:inline">Przewodnik PDF</span>
+            </Button>
             <Button onClick={share} variant="outline" size="sm" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 px-3 flex-shrink-0">
               {copied ? <Check className="w-3 h-3 mr-1.5 text-emerald-400" /> : <Copy className="w-3 h-3 mr-1.5" />}
               <span className="hidden sm:inline">{copied ? 'Skopiowano!' : 'Udostępnij'}</span>
@@ -1111,5 +1120,6 @@ export default function DeployPipelineGuide() {
         </div>
       </div>
     </div>
+    </>
   );
 }
