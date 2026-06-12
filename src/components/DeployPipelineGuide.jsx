@@ -484,11 +484,12 @@ const StepRow = ({ text, checked, onToggle, hint, hintOpen, onToggleHint, meta }
       {hint && (
         <button
           onClick={onToggleHint}
-          className={`mt-0.5 flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200 ${hintOpen ? 'bg-indigo-500/15 text-indigo-300 ring-1 ring-indigo-500/30' : 'text-zinc-600 hover:text-indigo-300 hover:bg-zinc-900'}`}
+          className={`mt-0.5 flex-shrink-0 h-6 rounded-md flex items-center justify-center gap-1 px-1.5 transition-all duration-200 ${hintOpen ? 'bg-indigo-500/15 text-indigo-300 ring-1 ring-indigo-500/30' : 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-indigo-300 hover:border-zinc-700 hover:bg-zinc-800'}`}
           aria-label={hintOpen ? 'Ukryj podpowiedź' : 'Pokaż podpowiedź'}
           title={hintOpen ? 'Ukryj podpowiedź' : 'Pokaż podpowiedź'}
         >
           <HelpCircle className="w-3.5 h-3.5" strokeWidth={1.75} />
+          <span className="text-[10px] font-medium hidden sm:inline">{hintOpen ? 'ukryj' : 'info'}</span>
         </button>
       )}
     </div>
@@ -853,11 +854,18 @@ export default function DeployPipelineGuide() {
               ręcznie
             </span>
           </div>
-          <div className="text-[11.5px] text-zinc-600 whitespace-nowrap">
-            Created by{' '}
-            <a href="mailto:artur.nawrowski@gmail.com" className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">ArChi</a>
-            {' '}for{' '}
-            <a href="https://webtolearn.pl" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">WebToLearn</a>
+          <div className="flex flex-col items-start sm:items-end gap-0.5 sm:ml-auto">
+            <div className="text-[11.5px] text-zinc-600 whitespace-nowrap">
+              Created by{' '}
+              <a href="mailto:artur.nawrowski@gmail.com" className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">ArChi</a>
+              {' '}for{' '}
+              <a href="https://webtolearn.pl" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">WebToLearn</a>
+            </div>
+            <div className="text-[10px] text-zinc-700 whitespace-nowrap">
+              Copyright by Krajowe Centrum Badań Sztucznej Inteligencji{' '}
+              <a href="https://kcbsi.pl" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-zinc-400 transition-colors">kcbsi.pl</a>
+              {' '}2026
+            </div>
           </div>
         </footer>
       </main>
