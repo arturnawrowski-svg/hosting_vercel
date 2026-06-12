@@ -20,9 +20,27 @@ export default async function handler(req, res) {
       fetch('https://api.vercel.com/v6/deployments?limit=3', { headers: h }).then(r => r.json()),
     ]);
 
+    const githubProject = (projectsJson.projects || []).find(
+      p => p.link?.type === 'github' || p.link?.repoId != null
+    );
+    let domains = [];
+    if (githubProject) {
+      try {
+        const domainsRes = await fetch(
+          `https://api.vercel.com/v9/projects/${githubProject.id}/domains?limit=20`,
+          { headers: h }
+        );
+        if (domainsRes.ok) {
+          const domainsJson = await domainsRes.json();
+          domains = (domainsJson.domains || []).filter(d => !d.name.endsWith('.vercel.app'));
+        }
+      } catch {}
+    }
+
     res.status(200).json({
       projects: projectsJson.projects || [],
       latestDeployment: (deploymentsJson.deployments || [])[0] || null,
+      domains,
     });
   } catch (e) {
     res.status(500).json({ error: e.message });

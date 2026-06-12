@@ -33,239 +33,14 @@ import {
   BookOpen,
 } from 'lucide-react';
 
-const BrowserFrame = ({ url, children }) => (
-  <div className="rounded-lg overflow-hidden border border-zinc-800 bg-zinc-950/80 shadow-lg">
-    <div className="flex items-center gap-2 px-3 py-2 bg-zinc-900/80 border-b border-zinc-800">
-      <div className="flex gap-1.5">
-        <div className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
-        <div className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
-        <div className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
-      </div>
-      <div className="flex-1 mx-2 px-2.5 py-1 rounded bg-zinc-950 border border-zinc-800 text-[10.5px] font-mono text-zinc-500 truncate">
-        {url}
-      </div>
-    </div>
-    <div className="p-3.5">{children}</div>
-  </div>
-);
+import {
+  BrowserFrame, Terminal,
+  GithubRepoMockup, VercelAddNewMockup, VercelFrameworkMockup, VercelDeployedMockup,
+  CloudflareNSMockup, CloudflareDNSMockup, ProxyToggleMockup, VercelDomainsMockup,
+  CloudflareSettingsMockup,
+} from './Mockups';
 
-const Terminal = ({ lines, title = 'bash' }) => (
-  <div className="rounded-lg overflow-hidden border border-zinc-800 bg-black shadow-lg">
-    <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-950 border-b border-zinc-800">
-      <div className="flex gap-1.5">
-        <div className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
-        <div className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
-        <div className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
-      </div>
-      <TerminalIcon className="w-3 h-3 text-zinc-600 ml-1.5" />
-      <span className="text-[10px] font-mono text-zinc-500">{title}</span>
-    </div>
-    <div className="p-3.5 font-mono text-[11.5px] space-y-1 leading-relaxed">
-      {lines.map((line, i) => (
-        <div key={i} className="flex gap-2.5">
-          <span className="text-zinc-700 select-none">$</span>
-          <span className="text-zinc-200">
-            {line.split(/("[^"]*")/g).map((part, j) =>
-              part.startsWith('"') ? (
-                <span key={j} className="text-emerald-300">{part}</span>
-              ) : (
-                <span key={j}>{part}</span>
-              )
-            )}
-          </span>
-        </div>
-      ))}
-    </div>
-  </div>
-);
 
-const GithubRepoMockup = () => (
-  <BrowserFrame url="github.com/new">
-    <div className="space-y-3">
-      <div>
-        <div className="text-[9.5px] uppercase tracking-wider text-zinc-500 mb-1">Repository name</div>
-        <div className="flex items-center gap-1.5">
-          <div className="px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-[11px] text-zinc-400 font-mono">artur /</div>
-          <div className="flex-1 px-2 py-1 rounded bg-zinc-900 border border-indigo-500/50 text-[11px] text-zinc-100 font-mono">moj-projekt</div>
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-2">
-        <div className="p-2 rounded border border-indigo-500/40 bg-indigo-500/[0.06]">
-          <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded-full border-2 border-indigo-400 flex items-center justify-center">
-              <div className="w-1 h-1 rounded-full bg-indigo-400" />
-            </div>
-            <span className="text-[10.5px] text-zinc-200 font-medium">Public</span>
-          </div>
-        </div>
-        <div className="p-2 rounded border border-zinc-800">
-          <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded-full border border-zinc-600" />
-            <span className="text-[10.5px] text-zinc-500">Private</span>
-          </div>
-        </div>
-      </div>
-      <div className="flex justify-end pt-1">
-        <button className="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-[11px] font-medium text-white">Create repository</button>
-      </div>
-    </div>
-  </BrowserFrame>
-);
-
-const VercelAddNewMockup = () => (
-  <BrowserFrame url="vercel.com/dashboard">
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-md bg-white flex items-center justify-center">
-            <div className="w-0 h-0 border-l-[5px] border-r-[5px] border-b-[8px] border-l-transparent border-r-transparent border-b-black" />
-          </div>
-          <span className="text-[11px] text-zinc-200 font-medium">Overview</span>
-        </div>
-        <div className="relative">
-          <button className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-white text-black text-[11px] font-medium shadow-[0_0_0_3px_rgba(99,102,241,0.25)]">
-            Add New...
-            <ChevronDown className="w-3 h-3" />
-          </button>
-          <div className="absolute top-full right-0 mt-1 w-32 rounded border border-zinc-800 bg-zinc-950 py-1 shadow-xl">
-            <div className="px-2 py-1 text-[10.5px] text-indigo-300 bg-indigo-500/10">Project</div>
-            <div className="px-2 py-1 text-[10.5px] text-zinc-500">Domain</div>
-            <div className="px-2 py-1 text-[10.5px] text-zinc-500">Team</div>
-          </div>
-        </div>
-      </div>
-      <div className="h-12 rounded border border-dashed border-zinc-800 flex items-center justify-center text-[10px] text-zinc-600">No projects yet</div>
-    </div>
-  </BrowserFrame>
-);
-
-const VercelFrameworkMockup = () => (
-  <BrowserFrame url="vercel.com/new">
-    <div className="space-y-2.5">
-      <div>
-        <div className="text-[9.5px] uppercase tracking-wider text-zinc-500 mb-1">Framework Preset</div>
-        <div className="flex items-center justify-between px-2.5 py-1.5 rounded border border-indigo-500/50 bg-zinc-900 shadow-[0_0_0_3px_rgba(99,102,241,0.15)]">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-gradient-to-br from-purple-400 to-yellow-400" />
-            <span className="text-[11px] text-zinc-100 font-medium">Vite</span>
-          </div>
-          <ChevronDown className="w-3 h-3 text-zinc-500" />
-        </div>
-        <div className="mt-1 ml-1 space-y-0.5">
-          {['Next.js', 'Astro', 'SvelteKit', 'Remix'].map((f) => (
-            <div key={f} className="text-[10px] text-zinc-600">· {f}</div>
-          ))}
-        </div>
-      </div>
-      <button className="w-full py-1.5 rounded bg-white text-black text-[11px] font-medium">Deploy</button>
-    </div>
-  </BrowserFrame>
-);
-
-const VercelDeployedMockup = () => (
-  <BrowserFrame url="vercel.com/artur/moj-projekt">
-    <div className="space-y-2.5">
-      <div className="flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
-        <span className="text-[11px] text-zinc-100 font-medium">Ready</span>
-        <span className="text-[10px] text-zinc-500">· 23s</span>
-      </div>
-      <div className="p-2 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-between gap-2">
-        <span className="font-mono text-[11px] text-indigo-300 truncate">moj-projekt.vercel.app</span>
-        <button className="flex-shrink-0 p-1 rounded hover:bg-zinc-800">
-          <ExternalLink className="w-3 h-3 text-zinc-400" />
-        </button>
-      </div>
-    </div>
-  </BrowserFrame>
-);
-
-const CloudflareNSMockup = () => (
-  <BrowserFrame url="dash.cloudflare.com">
-    <div className="space-y-2">
-      <div className="text-[9.5px] uppercase tracking-wider text-zinc-500">Cloudflare nameservers</div>
-      {['amir.ns.cloudflare.com', 'rita.ns.cloudflare.com'].map((ns) => (
-        <div key={ns} className="flex items-center justify-between gap-2 p-2 rounded bg-zinc-900 border border-zinc-800">
-          <span className="font-mono text-[11px] text-indigo-300 truncate">{ns}</span>
-          <div className="flex-shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700">
-            <Copy className="w-2.5 h-2.5 text-zinc-400" />
-            <span className="text-[9px] text-zinc-400 uppercase tracking-wider">Copy</span>
-          </div>
-        </div>
-      ))}
-    </div>
-  </BrowserFrame>
-);
-
-const CloudflareDNSMockup = () => (
-  <BrowserFrame url="dash.cloudflare.com/.../dns">
-    <div className="text-[10px]">
-      <div className="grid grid-cols-[42px_1fr_1.7fr_70px] gap-2 pb-1.5 mb-1.5 border-b border-zinc-800 text-zinc-500 uppercase tracking-wider text-[8.5px]">
-        <span>Type</span><span>Name</span><span>Content</span><span>Proxy</span>
-      </div>
-      <div className="grid grid-cols-[42px_1fr_1.7fr_70px] gap-2 py-1.5 items-center">
-        <span className="font-mono text-[10.5px] text-zinc-300">CNAME</span>
-        <span className="font-mono text-[10.5px] text-zinc-200">@</span>
-        <span className="font-mono text-[10.5px] text-zinc-300 truncate">cname.vercel-dns.com</span>
-        <div className="flex items-center gap-1">
-          <Cloud className="w-3 h-3 text-zinc-500" />
-          <span className="text-[9px] text-zinc-500">DNS</span>
-        </div>
-      </div>
-      <div className="grid grid-cols-[42px_1fr_1.7fr_70px] gap-2 py-1.5 items-center border-t border-zinc-900">
-        <span className="font-mono text-[10.5px] text-zinc-300">A</span>
-        <span className="font-mono text-[10.5px] text-zinc-200">@</span>
-        <span className="font-mono text-[10.5px] text-zinc-300">76.76.21.21</span>
-        <div className="flex items-center gap-1">
-          <Cloud className="w-3 h-3 text-zinc-500" />
-          <span className="text-[9px] text-zinc-500">DNS</span>
-        </div>
-      </div>
-    </div>
-  </BrowserFrame>
-);
-
-const ProxyToggleMockup = () => (
-  <div className="rounded-lg border border-amber-500/20 bg-gradient-to-br from-amber-500/[0.04] to-transparent p-4">
-    <div className="flex items-center justify-center gap-5">
-      <div className="flex flex-col items-center gap-1.5 relative">
-        <div className="relative w-14 h-14 rounded-xl bg-orange-500/15 border border-orange-500/40 flex items-center justify-center">
-          <Cloud className="w-7 h-7 text-orange-400" fill="currentColor" fillOpacity={0.3} />
-          <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-red-500 flex items-center justify-center ring-2 ring-zinc-950">
-            <X className="w-2.5 h-2.5 text-white" strokeWidth={3.5} />
-          </div>
-        </div>
-        <span className="text-[10px] text-orange-300 font-medium uppercase tracking-wider">Proxied</span>
-        <span className="text-[9px] text-zinc-500">Breaks SSL</span>
-      </div>
-      <ArrowRight className="w-5 h-5 text-zinc-600 -mt-3" strokeWidth={1.5} />
-      <div className="flex flex-col items-center gap-1.5 relative">
-        <div className="relative w-14 h-14 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center">
-          <Cloud className="w-7 h-7 text-zinc-500" />
-          <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center ring-2 ring-zinc-950">
-            <Check className="w-2.5 h-2.5 text-white" strokeWidth={3.5} />
-          </div>
-        </div>
-        <span className="text-[10px] text-zinc-300 font-medium uppercase tracking-wider">DNS only</span>
-        <span className="text-[9px] text-emerald-400">SSL works</span>
-      </div>
-    </div>
-  </div>
-);
-
-const VercelDomainsMockup = () => (
-  <BrowserFrame url="vercel.com/.../settings/domains">
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <input readOnly value="moj-projekt.pl" className="flex-1 px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-zinc-200" />
-        <button className="px-2.5 py-1 rounded bg-white text-black text-[11px] font-medium">Add</button>
-      </div>
-      <div className="p-2 rounded bg-amber-500/[0.06] border border-amber-500/20 text-[10px] text-amber-300/90">
-        Invalid Configuration — add DNS records to verify
-      </div>
-    </div>
-  </BrowserFrame>
-);
 
 const stepHints = {
   'github-0': {
@@ -365,6 +140,43 @@ const stepHints = {
       { label: 'dnschecker.org', url: 'https://dnschecker.org' },
     ],
     tips: ['Cloudflare wyśle Ci maila gdy domena będzie Active'],
+  },
+  'cloudflare-3': {
+    description: 'Trzy szybkie ustawienia po aktywacji domeny — znacząco poprawiają bezpieczeństwo i wydajność strony.',
+    mockup: <CloudflareSettingsMockup />,
+    tabs: [
+      {
+        label: 'SSL/TLS',
+        content: (
+          <div className="space-y-2 text-[12px]">
+            <p className="text-zinc-300">Przejdź do <span className="font-mono text-orange-300">SSL/TLS → Overview</span> i ustaw tryb na <strong className="text-white">Full (strict)</strong>.</p>
+            <p className="text-zinc-500">Weryfikuje certyfikat Vercel — bez tego przeglądarki mogą pokazywać ostrzeżenie o bezpieczeństwie.</p>
+          </div>
+        ),
+      },
+      {
+        label: 'Speed',
+        content: (
+          <div className="space-y-2 text-[12px]">
+            <p className="text-zinc-300">Przejdź do <span className="font-mono text-orange-300">Speed → Optimization</span> i włącz <strong className="text-white">Auto Minify</strong> (HTML + CSS + JS).</p>
+            <p className="text-zinc-500">Cloudflare usuwa zbędne spacje i komentarze — strona ładuje się szybciej.</p>
+          </div>
+        ),
+      },
+      {
+        label: 'HTTPS redirect',
+        content: (
+          <div className="space-y-2 text-[12px]">
+            <p className="text-zinc-300">Przejdź do <span className="font-mono text-orange-300">SSL/TLS → Edge Certificates</span> i włącz <strong className="text-white">Always Use HTTPS</strong>.</p>
+            <p className="text-zinc-500">Każdy kto wejdzie przez http:// zostanie automatycznie przekierowany na https://.</p>
+          </div>
+        ),
+      },
+    ],
+    tips: [
+      'Te 3 ustawienia to absolutne minimum — zajmą łącznie 2 minuty',
+      'Opcjonalnie: Bots Fight Mode (Security → Bots) dla ochrony przed botami',
+    ],
   },
   'link-0': {
     description: 'Wpisz domenę bez https://. Vercel od razu zwróci listę rekordów do dodania.',
@@ -649,6 +461,7 @@ const phases = [
       'Dodaj domenę do Cloudflare',
       'Skopiuj Nameservery i wklej w panelu rejestratora',
       'Poczekaj na propagację DNS',
+      'Skonfiguruj SSL, Speed i HTTPS redirect',
     ],
   },
   {
@@ -682,6 +495,7 @@ const stepMeta = {
   'cloudflare-0':{ Icon: MousePointerClick, color: 'text-blue-400',   bg: 'bg-blue-400/10',   label: 'przeglądarka' },
   'cloudflare-1':{ Icon: Copy,             color: 'text-amber-400',  bg: 'bg-amber-400/10',  label: 'kopiuj' },
   'cloudflare-2':{ Icon: Clock,            color: 'text-amber-400',  bg: 'bg-amber-400/10',  label: 'oczekiwanie' },
+  'cloudflare-3':{ Icon: Shield,           color: 'text-emerald-400', bg: 'bg-emerald-400/10', label: 'konfiguracja' },
   'link-0':      { Icon: Settings,          color: 'text-violet-400', bg: 'bg-violet-400/10', label: 'konfiguracja' },
   'link-1':      { Icon: Copy,             color: 'text-amber-400',  bg: 'bg-amber-400/10',  label: 'kopiuj' },
   'link-2':      { Icon: MousePointerClick, color: 'text-blue-400',   bg: 'bg-blue-400/10',   label: 'przeglądarka' },
@@ -730,7 +544,7 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-const PhaseCard = ({ phase, status, checked, onToggle, openHints, onToggleHint, index, isLocked, topWidget, apiVerified }) => {
+const PhaseCard = ({ phase, status, checked, onToggle, openHints, onToggleHint, index, isLocked, topWidget, apiVerified, optional }) => {
   const Icon = phase.icon;
   const done = status === 'done';
   return (
@@ -759,6 +573,9 @@ const PhaseCard = ({ phase, status, checked, onToggle, openHints, onToggleHint, 
             <Badge variant="outline" className={`font-mono text-[10.5px] px-2 py-0.5 rounded-md flex-shrink-0 ${isLocked ? 'bg-zinc-900/50 border-zinc-800 text-zinc-600' : 'bg-indigo-500/10 border-indigo-500/30 text-indigo-300'}`}>
               KROK {phase.number}
             </Badge>
+            {optional && (
+              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700 uppercase tracking-wider">Opcjonalne</span>
+            )}
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className={`text-[15px] sm:text-base font-semibold tracking-tight ${isLocked ? 'text-zinc-500' : 'text-zinc-100'}`}>{phase.platform}</h3>
@@ -840,6 +657,7 @@ export default function DeployPipelineGuide() {
   const [openHints, setOpenHints] = useState({});
   const [copied, setCopied] = useState(false);
   const [showPdf, setShowPdf] = useState(false);
+  const [noDomain, setNoDomain] = useState(false);
   const [vercelToken, setVercelToken] = useState(() => localStorage.getItem('vercel_token') || '');
   const [vercelApiStatus, setVercelApiStatus] = useState('idle');
   const [vercelApiData, setVercelApiData] = useState(null);
@@ -857,7 +675,7 @@ export default function DeployPipelineGuide() {
           body: JSON.stringify({ token: vercelToken }),
         });
         if (!res.ok) throw new Error(res.status === 401 ? 'invalid_token' : 'error');
-        const { projects = [], latestDeployment = null } = await res.json();
+        const { projects = [], latestDeployment = null, domains = [] } = await res.json();
         if (cancelled) return;
         const verified = { 'vercel-0': true };
         if (projects.length > 0) {
@@ -865,8 +683,9 @@ export default function DeployPipelineGuide() {
           if (projects.some(p => p.link?.type === 'github' || p.link?.repoId != null)) verified['vercel-2'] = true;
         }
         if (latestDeployment?.readyState === 'READY') verified['vercel-4'] = true;
+        if (domains.length > 0 && domains.some(d => d.verified)) verified['link-4'] = true;
         setApiVerified(verified);
-        setVercelApiData({ projects, latestDeployment });
+        setVercelApiData({ projects, latestDeployment, domains });
         setVercelApiStatus('connected');
       } catch (e) {
         if (!cancelled) { setVercelApiStatus('error'); setApiVerified({}); }
@@ -910,13 +729,16 @@ export default function DeployPipelineGuide() {
 
   const getPhaseIsLocked = (index) => {
     if (index === 0) return false;
+    if (noDomain && index >= 2) return false;
     for (let i = 0; i < index; i++) {
       if (!isPhaseDone(phases[i])) return true;
     }
     return false;
   };
 
-  const allDone = completedSteps === totalSteps && totalSteps > 0;
+  const allDone = noDomain
+    ? isPhaseDone(phases[0]) && isPhaseDone(phases[1])
+    : completedSteps === totalSteps && totalSteps > 0;
   const phaseIsLocked = (idx) => getPhaseIsLocked(idx);
 
   return (
@@ -929,6 +751,8 @@ export default function DeployPipelineGuide() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;600&display=swap');
         @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes confettiFall { 0% { transform: translateY(-20px) rotate(0deg) scale(1); opacity:1; } 80% { opacity:1; } 100% { transform: translateY(220px) rotate(540deg) scale(0.5); opacity:0; } }
+        @keyframes popIn { 0% { transform: scale(0.85); opacity:0; } 60% { transform: scale(1.04); } 100% { transform: scale(1); opacity:1; } }
         .font-mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace; }
         .grid-bg {
           background-image: linear-gradient(rgba(99,102,241,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.06) 1px, transparent 1px);
@@ -958,9 +782,9 @@ export default function DeployPipelineGuide() {
               </div>
               <Progress value={progress} className="h-1.5 bg-zinc-900 [&>div]:bg-gradient-to-r [&>div]:from-indigo-500 [&>div]:to-indigo-400 [&>div]:transition-all [&>div]:duration-500" />
             </div>
-            <Button onClick={() => setShowPdf(true)} variant="outline" size="sm" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 px-3 flex-shrink-0">
-              <BookOpen className="w-3 h-3 mr-1.5" />
-              <span className="hidden sm:inline">Przewodnik PDF</span>
+            <Button onClick={() => setShowPdf(true)} variant="outline" size="sm" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 px-2.5 flex-shrink-0" title="Otwórz przewodnik PDF">
+              <BookOpen className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline ml-1.5">PDF</span>
             </Button>
             <Button onClick={share} variant="outline" size="sm" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 px-3 flex-shrink-0">
               {copied ? <Check className="w-3 h-3 mr-1.5 text-emerald-400" /> : <Copy className="w-3 h-3 mr-1.5" />}
@@ -1008,6 +832,28 @@ export default function DeployPipelineGuide() {
           <div className="space-y-6 sm:space-y-8">
             {phases.map((phase, idx) => (
               <React.Fragment key={phase.id}>
+                {idx === 2 && (
+                  <div className="pl-12 sm:pl-16" style={{ animation: `fadeUp 0.5s ease-out 0.1s both` }}>
+                    <button
+                      onClick={() => setNoDomain(v => !v)}
+                      className={`w-full flex items-center justify-between gap-4 p-3.5 rounded-xl border transition-all duration-200 text-left ${
+                        noDomain
+                          ? 'border-indigo-500/40 bg-indigo-500/[0.07]'
+                          : 'border-zinc-800 bg-zinc-900/40 hover:border-zinc-700'
+                      }`}
+                    >
+                      <div>
+                        <p className="text-[13px] font-medium text-zinc-200">Nie mam własnej domeny</p>
+                        <p className="text-[11.5px] text-zinc-500 mt-0.5">
+                          {noDomain ? 'Fazy 3 i 4 są opcjonalne — strona jest live na .vercel.app' : 'Fazy 3 i 4 staną się opcjonalne — strona działa też na .vercel.app'}
+                        </p>
+                      </div>
+                      <div className={`relative flex-shrink-0 w-10 h-6 rounded-full transition-colors duration-200 ${noDomain ? 'bg-indigo-500' : 'bg-zinc-700'}`}>
+                        <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 ${noDomain ? 'translate-x-5' : 'translate-x-1'}`} />
+                      </div>
+                    </button>
+                  </div>
+                )}
                 {idx === 3 && (
                   <div className="pl-12 sm:pl-16" style={{ animation: `fadeUp 0.5s ease-out ${0.1 * idx + 0.25}s both` }}>
                     <Alert className="bg-amber-500/[0.04] border-amber-500/30 backdrop-blur-sm">
@@ -1032,6 +878,7 @@ export default function DeployPipelineGuide() {
                   index={idx}
                   isLocked={phaseIsLocked(idx)}
                   apiVerified={apiVerified}
+                  optional={noDomain && idx >= 2}
                   topWidget={phase.id === 'vercel' && !phaseIsLocked(idx) ? (
                     <VercelConnect
                       token={vercelToken}
@@ -1046,16 +893,76 @@ export default function DeployPipelineGuide() {
           </div>
         </section>
 
-        {allDone && (
-          <div className="mt-10 pl-12 sm:pl-16" style={{ animation: 'fadeUp 0.5s ease-out' }}>
-            <div className="relative overflow-hidden rounded-xl border border-indigo-500/30 bg-gradient-to-br from-indigo-500/10 via-indigo-500/5 to-transparent p-6 text-center">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(99,102,241,0.15),transparent_70%)]" />
-              <CheckCircle className="w-8 h-8 text-indigo-400 mx-auto mb-3 relative" strokeWidth={1.5} />
-              <h3 className="text-lg font-semibold text-zinc-100 mb-1 relative">Pipeline gotowy!</h3>
-              <p className="text-sm text-zinc-400 relative">Wszystkie fazy ukończone. Twoja aplikacja jest live pod własną domeną.</p>
+        {allDone && (() => {
+          const liveUrl = vercelApiData?.domains?.find(d => d.verified)?.name
+            ? `https://${vercelApiData.domains.find(d => d.verified).name}`
+            : vercelApiData?.latestDeployment?.url
+              ? `https://${vercelApiData.latestDeployment.url}`
+              : null;
+          const confettiPieces = [
+            { left:'8%', delay:'0s', color:'#6366f1', rect:false },
+            { left:'16%', delay:'0.15s', color:'#10b981', rect:true },
+            { left:'24%', delay:'0.3s', color:'#f59e0b', rect:false },
+            { left:'32%', delay:'0.05s', color:'#ec4899', rect:true },
+            { left:'42%', delay:'0.25s', color:'#3b82f6', rect:false },
+            { left:'52%', delay:'0.1s', color:'#6366f1', rect:true },
+            { left:'62%', delay:'0.35s', color:'#10b981', rect:false },
+            { left:'70%', delay:'0.2s', color:'#f59e0b', rect:true },
+            { left:'80%', delay:'0.4s', color:'#ec4899', rect:false },
+            { left:'90%', delay:'0.08s', color:'#3b82f6', rect:true },
+            { left:'12%', delay:'0.45s', color:'#10b981', rect:false },
+            { left:'55%', delay:'0.18s', color:'#6366f1', rect:true },
+            { left:'76%', delay:'0.32s', color:'#f59e0b', rect:false },
+            { left:'36%', delay:'0.42s', color:'#ec4899', rect:true },
+          ];
+          return (
+            <div className="mt-10 pl-12 sm:pl-16" style={{ animation: 'popIn 0.6s cubic-bezier(.34,1.56,.64,1) both' }}>
+              <div className="relative overflow-hidden rounded-2xl border border-indigo-500/40 bg-gradient-to-br from-indigo-500/10 via-zinc-900/60 to-emerald-500/[0.06] p-8 text-center shadow-[0_0_60px_-10px_rgba(99,102,241,0.35)]">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(99,102,241,0.18),transparent_65%)] pointer-events-none" />
+                {confettiPieces.map((p, i) => (
+                  <div key={i} style={{
+                    position:'absolute', left:p.left, top:'0', width: p.rect ? 7 : 8, height: p.rect ? 7 : 8,
+                    background: p.color, borderRadius: p.rect ? 2 : '50%',
+                    animation: `confettiFall 2.2s ease-in ${p.delay} both`,
+                    pointerEvents: 'none',
+                  }} />
+                ))}
+                <div className="relative">
+                  <div className="flex items-center justify-center gap-3 mb-4">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-[0_0_30px_-4px_rgba(99,102,241,0.7)]">
+                      <CheckCircle className="w-7 h-7 text-white" strokeWidth={2} />
+                    </div>
+                  </div>
+                  <h3 className="text-2xl font-bold text-zinc-100 mb-2">
+                    {noDomain ? 'Strona jest live! 🚀' : 'Pipeline gotowy! 🎉'}
+                  </h3>
+                  <p className="text-sm text-zinc-400 mb-6 max-w-xs mx-auto leading-relaxed">
+                    {noDomain
+                      ? 'Aplikacja wdrożona na Vercelu i dostępna publicznie. Możesz podłączyć własną domenę w dowolnym momencie.'
+                      : 'Wszystkie fazy ukończone. Twoja aplikacja działa pod własną domeną z SSL i CDN Cloudflare.'}
+                  </p>
+                  {liveUrl && (
+                    <a
+                      href={liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-colors shadow-lg"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      {liveUrl.replace('https://', '')}
+                    </a>
+                  )}
+                  {!liveUrl && (
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-300 text-sm">
+                      <CheckCircle className="w-4 h-4 text-emerald-400" strokeWidth={2} />
+                      Strona dostępna publicznie
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         <footer className="mt-20 pt-8 border-t border-zinc-900 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="text-[12px] text-zinc-500 leading-relaxed">
