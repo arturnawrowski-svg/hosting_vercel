@@ -19,12 +19,14 @@ import {
   HelpCircle,
   Cloud,
   X,
-  Play,
   ChevronDown,
   Copy,
   Terminal as TerminalIcon,
   Link2,
   Lightbulb,
+  Clock,
+  Settings,
+  MousePointerClick,
 } from 'lucide-react';
 
 const BrowserFrame = ({ url, children }) => (
@@ -462,10 +464,10 @@ const HintPanel = ({ hint, open }) => {
   );
 };
 
-const StepRow = ({ text, checked, onToggle, hint, hintOpen, onToggleHint }) => (
+const StepRow = ({ text, checked, onToggle, hint, hintOpen, onToggleHint, meta }) => (
   <div className="group/step">
     <div className="flex items-start gap-2 py-2 px-2 -mx-2 rounded-md hover:bg-white/[0.025] transition-colors duration-150">
-      <button onClick={onToggle} className="mt-0.5 flex-shrink-0" aria-label={checked ? 'Mark as undone' : 'Mark as done'}>
+      <button onClick={onToggle} className="mt-0.5 flex-shrink-0" aria-label={checked ? 'Oznacz jako niewykonane' : 'Oznacz jako wykonane'}>
         <div className={`w-[18px] h-[18px] rounded-[5px] border flex items-center justify-center transition-all duration-200 ease-out ${checked ? 'bg-indigo-500 border-indigo-500 shadow-[0_0_0_3px_rgba(99,102,241,0.15)]' : 'border-zinc-700 bg-zinc-950 group-hover/step:border-zinc-500'}`}>
           <Check className={`w-3 h-3 text-white transition-all duration-200 ${checked ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} strokeWidth={3.5} />
         </div>
@@ -473,11 +475,17 @@ const StepRow = ({ text, checked, onToggle, hint, hintOpen, onToggleHint }) => (
       <button onClick={onToggle} className={`flex-1 text-left text-[13.5px] leading-relaxed transition-all duration-200 ${checked ? 'text-zinc-500 line-through decoration-zinc-700' : 'text-zinc-300'}`}>
         {text}
       </button>
+      {meta && (
+        <span className={`mt-0.5 flex-shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9.5px] font-medium ${meta.color} ${meta.bg}`}>
+          <meta.Icon className="w-3 h-3" strokeWidth={1.75} />
+          <span className="hidden sm:inline">{meta.label}</span>
+        </span>
+      )}
       {hint && (
         <button
           onClick={onToggleHint}
           className={`mt-0.5 flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200 ${hintOpen ? 'bg-indigo-500/15 text-indigo-300 ring-1 ring-indigo-500/30' : 'text-zinc-600 hover:text-indigo-300 hover:bg-zinc-900'}`}
-          aria-label={hintOpen ? 'Hide hint' : 'Show hint'}
+          aria-label={hintOpen ? 'Ukryj podpowiedź' : 'Pokaż podpowiedź'}
           title={hintOpen ? 'Ukryj podpowiedź' : 'Pokaż podpowiedź'}
         >
           <HelpCircle className="w-3.5 h-3.5" strokeWidth={1.75} />
@@ -493,7 +501,8 @@ const phases = [
     id: 'github',
     number: '01',
     platform: 'GitHub',
-    description: 'Source control & repository',
+    description: 'Kontrola wersji i repozytorium',
+    descriptionEn: 'Source control & repository',
     icon: Github,
     steps: [
       'Utwórz repozytorium publiczne lub prywatne',
@@ -505,7 +514,8 @@ const phases = [
     id: 'vercel',
     number: '02',
     platform: 'Vercel',
-    description: 'Build, host & deploy',
+    description: 'Budowanie, hosting i wdrożenie',
+    descriptionEn: 'Build, host & deploy',
     icon: Server,
     steps: [
       'Załóż konto na vercel.com (zaloguj przez GitHub)',
@@ -519,9 +529,10 @@ const phases = [
     id: 'cloudflare',
     number: '03',
     platform: 'Cloudflare DNS',
-    description: 'DNS management & propagation',
+    description: 'Zarządzanie DNS i propagacja',
+    descriptionEn: 'DNS management & propagation',
     icon: Globe,
-    badge: 'up to 48h',
+    badge: 'maks. 48h',
     steps: [
       'Dodaj domenę do Cloudflare',
       'Skopiuj Nameservery i wklej w panelu rejestratora',
@@ -532,7 +543,8 @@ const phases = [
     id: 'link',
     number: '04',
     platform: 'Vercel ↔ Cloudflare',
-    description: 'Production domain connection',
+    description: 'Podłączenie domeny produkcyjnej',
+    descriptionEn: 'Production domain connection',
     icon: Shield,
     steps: [
       'W Vercel → Project Settings → Domains dodaj własną domenę',
@@ -545,6 +557,25 @@ const phases = [
 ];
 
 const ALL_STEP_KEYS = phases.flatMap((p) => p.steps.map((_, i) => `${p.id}-${i}`));
+
+const stepMeta = {
+  'github-0':    { Icon: MousePointerClick, color: 'text-blue-400',   bg: 'bg-blue-400/10',   label: 'przeglądarka' },
+  'github-1':    { Icon: TerminalIcon,      color: 'text-emerald-400', bg: 'bg-emerald-400/10', label: 'terminal' },
+  'github-2':    { Icon: TerminalIcon,      color: 'text-emerald-400', bg: 'bg-emerald-400/10', label: 'terminal' },
+  'vercel-0':    { Icon: MousePointerClick, color: 'text-blue-400',   bg: 'bg-blue-400/10',   label: 'przeglądarka' },
+  'vercel-1':    { Icon: MousePointerClick, color: 'text-blue-400',   bg: 'bg-blue-400/10',   label: 'kliknij' },
+  'vercel-2':    { Icon: MousePointerClick, color: 'text-blue-400',   bg: 'bg-blue-400/10',   label: 'przeglądarka' },
+  'vercel-3':    { Icon: Settings,          color: 'text-violet-400', bg: 'bg-violet-400/10', label: 'konfiguracja' },
+  'vercel-4':    { Icon: CheckCircle,       color: 'text-emerald-400', bg: 'bg-emerald-400/10', label: 'weryfikacja' },
+  'cloudflare-0':{ Icon: MousePointerClick, color: 'text-blue-400',   bg: 'bg-blue-400/10',   label: 'przeglądarka' },
+  'cloudflare-1':{ Icon: Copy,             color: 'text-amber-400',  bg: 'bg-amber-400/10',  label: 'kopiuj' },
+  'cloudflare-2':{ Icon: Clock,            color: 'text-amber-400',  bg: 'bg-amber-400/10',  label: 'oczekiwanie' },
+  'link-0':      { Icon: Settings,          color: 'text-violet-400', bg: 'bg-violet-400/10', label: 'konfiguracja' },
+  'link-1':      { Icon: Copy,             color: 'text-amber-400',  bg: 'bg-amber-400/10',  label: 'kopiuj' },
+  'link-2':      { Icon: MousePointerClick, color: 'text-blue-400',   bg: 'bg-blue-400/10',   label: 'przeglądarka' },
+  'link-3':      { Icon: AlertTriangle,    color: 'text-red-400',    bg: 'bg-red-400/10',    label: 'uwaga!' },
+  'link-4':      { Icon: CheckCircle,       color: 'text-emerald-400', bg: 'bg-emerald-400/10', label: 'weryfikacja' },
+};
 
 function encodeChecked(checked) {
   let bits = 0;
@@ -574,9 +605,9 @@ const PipelineNode = ({ icon: Icon, label, delay = 0 }) => (
 
 const StatusBadge = ({ status }) => {
   const config = {
-    pending: { label: 'Pending', cls: 'bg-zinc-800/60 text-zinc-400 border-zinc-700/50', dot: 'bg-zinc-500' },
-    progress: { label: 'In Progress', cls: 'bg-amber-500/10 text-amber-300 border-amber-500/30', dot: 'bg-amber-400 animate-pulse' },
-    done: { label: 'Done', cls: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30', dot: 'bg-emerald-400' },
+    pending: { label: 'Oczekuje', cls: 'bg-zinc-800/60 text-zinc-400 border-zinc-700/50', dot: 'bg-zinc-500' },
+    progress: { label: 'W toku', cls: 'bg-amber-500/10 text-amber-300 border-amber-500/30', dot: 'bg-amber-400 animate-pulse' },
+    done: { label: 'Gotowe', cls: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30', dot: 'bg-emerald-400' },
   };
   const c = config[status];
   return (
@@ -602,7 +633,7 @@ const PhaseCard = ({ phase, status, checked, onToggle, openHints, onToggleHint, 
         <div className="relative flex items-start justify-between gap-4 p-5 sm:p-6 pb-4">
           <div className="flex items-start gap-3 sm:gap-4 min-w-0">
             <Badge variant="outline" className="bg-indigo-500/10 border-indigo-500/30 text-indigo-300 font-mono text-[10.5px] px-2 py-0.5 rounded-md flex-shrink-0">
-              STEP {phase.number}
+              KROK {phase.number}
             </Badge>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
@@ -612,6 +643,7 @@ const PhaseCard = ({ phase, status, checked, onToggle, openHints, onToggleHint, 
                 )}
               </div>
               <p className="text-[12.5px] text-zinc-500 mt-0.5">{phase.description}</p>
+              {phase.descriptionEn && <p className="text-[10.5px] text-zinc-700 mt-0">{phase.descriptionEn}</p>}
             </div>
           </div>
           <div className="flex items-center gap-3 flex-shrink-0">
@@ -635,6 +667,7 @@ const PhaseCard = ({ phase, status, checked, onToggle, openHints, onToggleHint, 
                 hint={stepHints[key]}
                 hintOpen={!!openHints[key]}
                 onToggleHint={() => onToggleHint(key)}
+                meta={stepMeta[key]}
               />
             );
           })}
@@ -715,12 +748,12 @@ export default function DeployPipelineGuide() {
             <div className="w-7 h-7 rounded-md bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center">
               <Sparkles className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
             </div>
-            <span className="text-sm font-semibold tracking-tight hidden sm:block">Deploy Pipeline</span>
+            <span className="text-sm font-semibold tracking-tight hidden sm:block">Pipeline Wdrożeniowy</span>
           </div>
           <div className="flex-1 flex items-center gap-3 min-w-0">
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10.5px] uppercase tracking-[0.18em] text-zinc-500 font-medium">Progress</span>
+                <span className="text-[10.5px] uppercase tracking-[0.18em] text-zinc-500 font-medium">Postęp</span>
                 <span className="text-[11px] font-mono text-zinc-300">{completedSteps}/{totalSteps} · {Math.round(progress)}%</span>
               </div>
               <Progress value={progress} className="h-1.5 bg-zinc-900 [&>div]:bg-gradient-to-r [&>div]:from-indigo-500 [&>div]:to-indigo-400 [&>div]:transition-all [&>div]:duration-500" />
@@ -731,7 +764,7 @@ export default function DeployPipelineGuide() {
             </Button>
             <Button onClick={reset} variant="outline" size="sm" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 px-3 flex-shrink-0">
               <RotateCcw className="w-3 h-3 mr-1.5" />
-              <span className="hidden sm:inline">Reset</span>
+              <span className="hidden sm:inline">Resetuj</span>
             </Button>
           </div>
         </div>
@@ -741,10 +774,10 @@ export default function DeployPipelineGuide() {
         <section className="text-center mb-16 sm:mb-24" style={{ animation: 'fadeUp 0.6s ease-out' }}>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-            <span className="text-[11px] uppercase tracking-[0.15em] text-indigo-300 font-medium">Production Workflow</span>
+            <span className="text-[11px] uppercase tracking-[0.15em] text-indigo-300 font-medium">Workflow Produkcyjny</span>
           </div>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent mb-4">
-            Deploy Pipeline Setup
+            Konfiguracja Pipeline Wdrożeniowego
           </h1>
           <p className="text-base sm:text-lg text-zinc-500 mb-4 max-w-xl mx-auto leading-relaxed">
             <span className="text-zinc-300 font-medium">GitHub</span>
@@ -804,7 +837,7 @@ export default function DeployPipelineGuide() {
             <div className="relative overflow-hidden rounded-xl border border-indigo-500/30 bg-gradient-to-br from-indigo-500/10 via-indigo-500/5 to-transparent p-6 text-center">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(99,102,241,0.15),transparent_70%)]" />
               <CheckCircle className="w-8 h-8 text-indigo-400 mx-auto mb-3 relative" strokeWidth={1.5} />
-              <h3 className="text-lg font-semibold text-zinc-100 mb-1 relative">Pipeline ready</h3>
+              <h3 className="text-lg font-semibold text-zinc-100 mb-1 relative">Pipeline gotowy!</h3>
               <p className="text-sm text-zinc-400 relative">Wszystkie fazy ukończone. Twoja aplikacja jest live pod własną domeną.</p>
             </div>
           </div>
@@ -833,7 +866,7 @@ export default function DeployPipelineGuide() {
         <div className="w-52 rounded-xl border border-zinc-800 bg-zinc-950/80 backdrop-blur-xl p-3 shadow-2xl">
           <div className="flex items-center gap-2 px-2 pb-2 mb-1 border-b border-zinc-900">
             <ExternalLink className="w-3 h-3 text-zinc-500" />
-            <span className="text-[10.5px] uppercase tracking-[0.15em] text-zinc-500 font-medium">Quick Links</span>
+            <span className="text-[10.5px] uppercase tracking-[0.15em] text-zinc-500 font-medium">Szybkie linki</span>
           </div>
           <div className="space-y-1">
             {quickLinks.map((link) => {
