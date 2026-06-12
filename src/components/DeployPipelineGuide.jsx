@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -28,6 +28,7 @@ import {
   Settings,
   MousePointerClick,
   Lock,
+  Zap,
 } from 'lucide-react';
 
 const BrowserFrame = ({ url, children }) => (
@@ -465,41 +466,125 @@ const HintPanel = ({ hint, open }) => {
   );
 };
 
-const StepRow = ({ text, checked, onToggle, hint, hintOpen, onToggleHint, meta, disabled }) => (
+const VercelConnect = ({ token, onTokenChange, status, data }) => {
+  const [input, setInput] = useState(token);
+
+  const handleConnect = () => {
+    const t = input.trim();
+    if (!t) return;
+    localStorage.setItem('vercel_token', t);
+    onTokenChange(t);
+  };
+
+  const handleDisconnect = () => {
+    localStorage.removeItem('vercel_token');
+    onTokenChange('');
+    setInput('');
+  };
+
+  if (status === 'connected') {
+    const deployReady = data?.latestDeployment?.readyState === 'READY';
+    return (
+      <div className="mx-5 sm:mx-6 mb-3 flex items-center justify-between gap-3 px-3 py-2 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)] flex-shrink-0 animate-pulse" />
+          <span className="text-[12px] text-emerald-300 font-medium">Vercel API — połączono</span>
+          {data && (
+            <span className="text-[11px] text-zinc-500 hidden sm:inline">
+              {data.projects.length} proj.{deployReady ? ' · READY ✓' : ''}
+            </span>
+          )}
+        </div>
+        <button onClick={handleDisconnect} className="flex-shrink-0 text-[11px] text-zinc-600 hover:text-zinc-400 transition-colors px-2 py-0.5 rounded border border-zinc-800 hover:border-zinc-700">
+          rozłącz
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-5 sm:mx-6 mb-3 p-3 rounded-lg bg-zinc-900/50 border border-zinc-800/60 space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[12px] text-zinc-400 font-medium">Auto-weryfikacja przez Vercel API</span>
+        <a href="https://vercel.com/account/tokens" target="_blank" rel="noopener noreferrer" className="text-[10.5px] text-zinc-600 hover:text-indigo-400 flex items-center gap-1 transition-colors">
+          <ExternalLink className="w-2.5 h-2.5" />utwórz token
+        </a>
+      </div>
+      {status === 'error' && (
+        <div className="flex items-center gap-1.5 text-[11px] text-red-400">
+          <AlertTriangle className="w-3 h-3 flex-shrink-0" strokeWidth={2} />
+          Nieprawidłowy token lub brak uprawnień
+        </div>
+      )}
+      <div className="flex gap-2">
+        <input
+          type="password"
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleConnect()}
+          placeholder="Wklej token Vercel..."
+          className="flex-1 px-2.5 py-1.5 rounded-md bg-zinc-950 border border-zinc-800 text-[12px] font-mono text-zinc-300 placeholder-zinc-700 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 min-w-0"
+        />
+        <button
+          onClick={handleConnect}
+          disabled={!input.trim() || status === 'loading'}
+          className="flex-shrink-0 px-3 py-1.5 rounded-md bg-indigo-500 hover:bg-indigo-400 disabled:opacity-40 disabled:cursor-not-allowed text-white text-[12px] font-medium transition-colors"
+        >
+          {status === 'loading' ? '...' : 'Połącz'}
+        </button>
+      </div>
+      <p className="text-[10.5px] text-zinc-600">Token zapisywany lokalnie w przeglądarce — nie opuszcza Twojego urządzenia</p>
+    </div>
+  );
+};
+
+const StepRow = ({ text, checked, onToggle, hint, hintOpen, onToggleHint, meta, disabled, apiVerified }) => (
   <div className="group/step">
-    <div className={`flex items-start gap-2 py-2 px-2 -mx-2 rounded-md transition-colors duration-150 ${!disabled ? 'hover:bg-white/[0.025]' : ''}`}>
+    <div className={`flex items-start gap-2 py-2 px-2 -mx-2 rounded-md transition-colors duration-150 ${!disabled && !apiVerified ? 'hover:bg-white/[0.025]' : ''}`}>
       <button
-        onClick={disabled ? undefined : onToggle}
-        className={`mt-0.5 flex-shrink-0 ${disabled ? 'cursor-not-allowed' : ''}`}
-        aria-label={disabled ? 'Zablokowane' : checked ? 'Oznacz jako niewykonane' : 'Oznacz jako wykonane'}
+        onClick={disabled || apiVerified ? undefined : onToggle}
+        className={`mt-0.5 flex-shrink-0 ${disabled ? 'cursor-not-allowed' : apiVerified ? 'cursor-default' : ''}`}
+        aria-label={disabled ? 'Zablokowane' : apiVerified ? 'Zweryfikowane przez API' : checked ? 'Oznacz jako niewykonane' : 'Oznacz jako wykonane'}
       >
         <div className={`w-[18px] h-[18px] rounded-[5px] border flex items-center justify-center transition-all duration-200 ease-out ${
           disabled
             ? 'border-zinc-800 bg-zinc-950/50'
-            : checked
-              ? 'bg-indigo-500 border-indigo-500 shadow-[0_0_0_3px_rgba(99,102,241,0.15)]'
-              : 'border-zinc-700 bg-zinc-950 group-hover/step:border-zinc-500'
+            : apiVerified
+              ? 'bg-emerald-500/20 border-emerald-500/50 shadow-[0_0_0_3px_rgba(52,211,153,0.08)]'
+              : checked
+                ? 'bg-indigo-500 border-indigo-500 shadow-[0_0_0_3px_rgba(99,102,241,0.15)]'
+                : 'border-zinc-700 bg-zinc-950 group-hover/step:border-zinc-500'
         }`}>
           {disabled
             ? <Lock className="w-2.5 h-2.5 text-zinc-700" strokeWidth={2.5} />
-            : <Check className={`w-3 h-3 text-white transition-all duration-200 ${checked ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} strokeWidth={3.5} />
+            : apiVerified
+              ? <Check className="w-3 h-3 text-emerald-400" strokeWidth={3.5} />
+              : <Check className={`w-3 h-3 text-white transition-all duration-200 ${checked ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} strokeWidth={3.5} />
           }
         </div>
       </button>
       <button
-        onClick={disabled ? undefined : onToggle}
-        disabled={disabled}
+        onClick={disabled || apiVerified ? undefined : onToggle}
+        disabled={disabled || apiVerified}
         className={`flex-1 text-left text-[13.5px] leading-relaxed transition-all duration-200 ${
           disabled
             ? 'text-zinc-600 cursor-not-allowed'
-            : checked
-              ? 'text-zinc-500 line-through decoration-zinc-700'
-              : 'text-zinc-300'
+            : apiVerified
+              ? 'text-zinc-500 line-through decoration-zinc-700 cursor-default'
+              : checked
+                ? 'text-zinc-500 line-through decoration-zinc-700'
+                : 'text-zinc-300'
         }`}
       >
         {text}
       </button>
-      {meta && (
+      {apiVerified && (
+        <span className="mt-0.5 flex-shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9.5px] font-medium text-emerald-400 bg-emerald-400/10">
+          <Zap className="w-3 h-3" strokeWidth={1.75} />
+          <span className="hidden sm:inline">live</span>
+        </span>
+      )}
+      {!apiVerified && meta && (
         <span className={`mt-0.5 flex-shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9.5px] font-medium ${disabled ? 'text-zinc-700 bg-zinc-900/30' : `${meta.color} ${meta.bg}`}`}>
           <meta.Icon className="w-3 h-3" strokeWidth={1.75} />
           <span className="hidden sm:inline">{meta.label}</span>
@@ -643,7 +728,7 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-const PhaseCard = ({ phase, status, checked, onToggle, openHints, onToggleHint, index, isLocked }) => {
+const PhaseCard = ({ phase, status, checked, onToggle, openHints, onToggleHint, index, isLocked, topWidget, apiVerified }) => {
   const Icon = phase.icon;
   const done = status === 'done';
   return (
@@ -710,6 +795,7 @@ const PhaseCard = ({ phase, status, checked, onToggle, openHints, onToggleHint, 
           </div>
         )}
         <div className="h-px bg-gradient-to-r from-transparent via-zinc-800 to-transparent mx-5 sm:mx-6" />
+        {topWidget}
         <div className="px-5 sm:px-6 py-4 space-y-0.5">
           {phase.steps.map((step, i) => {
             const key = `${phase.id}-${i}`;
@@ -724,6 +810,7 @@ const PhaseCard = ({ phase, status, checked, onToggle, openHints, onToggleHint, 
                 onToggleHint={() => onToggleHint(key)}
                 meta={stepMeta[key]}
                 disabled={isLocked}
+                apiVerified={!!(apiVerified && apiVerified[key])}
               />
             );
           })}
@@ -750,6 +837,42 @@ export default function DeployPipelineGuide() {
   });
   const [openHints, setOpenHints] = useState({});
   const [copied, setCopied] = useState(false);
+  const [vercelToken, setVercelToken] = useState(() => localStorage.getItem('vercel_token') || '');
+  const [vercelApiStatus, setVercelApiStatus] = useState('idle');
+  const [vercelApiData, setVercelApiData] = useState(null);
+  const [apiVerified, setApiVerified] = useState({});
+
+  useEffect(() => {
+    if (!vercelToken) { setVercelApiStatus('idle'); setApiVerified({}); return; }
+    let cancelled = false;
+    const check = async () => {
+      if (!cancelled) setVercelApiStatus('loading');
+      try {
+        const res = await fetch('/api/vercel-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: vercelToken }),
+        });
+        if (!res.ok) throw new Error(res.status === 401 ? 'invalid_token' : 'error');
+        const { projects = [], latestDeployment = null } = await res.json();
+        if (cancelled) return;
+        const verified = { 'vercel-0': true };
+        if (projects.length > 0) {
+          verified['vercel-1'] = true;
+          if (projects.some(p => p.link?.type === 'github' || p.link?.repoId != null)) verified['vercel-2'] = true;
+        }
+        if (latestDeployment?.readyState === 'READY') verified['vercel-4'] = true;
+        setApiVerified(verified);
+        setVercelApiData({ projects, latestDeployment });
+        setVercelApiStatus('connected');
+      } catch (e) {
+        if (!cancelled) { setVercelApiStatus('error'); setApiVerified({}); }
+      }
+    };
+    check();
+    const id = setInterval(check, 30000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, [vercelToken]);
 
   const toggleStep = (key) => setChecked((prev) => ({ ...prev, [key]: !prev[key] }));
   const toggleHint = (key) => setOpenHints((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -763,13 +886,15 @@ export default function DeployPipelineGuide() {
     });
   };
 
+  const isStepDone = (key) => !!checked[key] || !!apiVerified[key];
+
   const totalSteps = ALL_STEP_KEYS.length;
-  const completedSteps = Object.values(checked).filter(Boolean).length;
+  const completedSteps = ALL_STEP_KEYS.filter(isStepDone).length;
   const progress = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
 
   const getPhaseStatus = (phase) => {
     const keys = phase.steps.map((_, i) => `${phase.id}-${i}`);
-    const done = keys.filter((k) => checked[k]).length;
+    const done = keys.filter(isStepDone).length;
     if (done === 0) return 'pending';
     if (done === keys.length) return 'done';
     return 'progress';
@@ -777,7 +902,7 @@ export default function DeployPipelineGuide() {
 
   const isPhaseDone = (phase) => {
     const keys = phase.steps.map((_, i) => `${phase.id}-${i}`);
-    return keys.every((k) => !!checked[k]);
+    return keys.every(isStepDone);
   };
 
   const getPhaseIsLocked = (index) => {
@@ -789,14 +914,15 @@ export default function DeployPipelineGuide() {
   };
 
   const allDone = completedSteps === totalSteps && totalSteps > 0;
+  const phaseIsLocked = (idx) => getPhaseIsLocked(idx);
 
   return (
     <div
       className="min-h-screen bg-[#0a0a0a] text-zinc-100 antialiased relative overflow-x-hidden"
-      style={{ fontFamily: '"Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif' }}
+      style={{ fontFamily: '"EB Garamond", Garamond, "Times New Roman", ui-serif, serif' }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;600&display=swap');
         @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         .font-mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace; }
         .grid-bg {
@@ -895,7 +1021,16 @@ export default function DeployPipelineGuide() {
                   openHints={openHints}
                   onToggleHint={toggleHint}
                   index={idx}
-                  isLocked={getPhaseIsLocked(idx)}
+                  isLocked={phaseIsLocked(idx)}
+                  apiVerified={apiVerified}
+                  topWidget={phase.id === 'vercel' && !phaseIsLocked(idx) ? (
+                    <VercelConnect
+                      token={vercelToken}
+                      onTokenChange={setVercelToken}
+                      status={vercelApiStatus}
+                      data={vercelApiData}
+                    />
+                  ) : null}
                 />
               </React.Fragment>
             ))}
@@ -923,14 +1058,14 @@ export default function DeployPipelineGuide() {
               ręcznie
             </span>
           </div>
-          <div className="flex flex-col items-start sm:items-end gap-0.5 sm:ml-auto">
-            <div className="text-[11.5px] text-zinc-600 whitespace-nowrap">
+          <div className="flex flex-col items-end gap-0.5 ml-auto text-right">
+            <div className="text-[10px] text-zinc-600 whitespace-nowrap">
               Created by{' '}
               <a href="mailto:artur.nawrowski@gmail.com" className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">ArChi</a>
               {' '}for{' '}
               <a href="https://webtolearn.pl" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">WebToLearn</a>
             </div>
-            <div className="text-[10px] text-zinc-700 whitespace-nowrap">
+            <div className="text-[9px] text-zinc-700 whitespace-nowrap">
               Copyright by Krajowe Centrum Badań Sztucznej Inteligencji{' '}
               <a href="https://kcbsi.pl" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-zinc-400 transition-colors">kcbsi.pl</a>
               {' '}2026
