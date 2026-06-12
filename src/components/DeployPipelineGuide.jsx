@@ -776,8 +776,8 @@ export default function DeployPipelineGuide() {
           </div>
         )}
 
-        <footer className="mt-20 pt-8 border-t border-zinc-900">
-          <div className="text-[12px] text-zinc-500 leading-relaxed text-center sm:text-left">
+        <footer className="mt-20 pt-8 border-t border-zinc-900 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="text-[12px] text-zinc-500 leading-relaxed">
             <span className="text-zinc-400 font-medium">Eksport z Lovable:</span> Project Settings → Export to GitHub
             <span className="text-zinc-700 mx-2 hidden sm:inline">·</span>
             <span className="block sm:inline mt-1 sm:mt-0">
@@ -785,6 +785,11 @@ export default function DeployPipelineGuide() {
               <code className="font-mono text-[11px] bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded text-zinc-300">git push</code>{' '}
               ręcznie
             </span>
+          </div>
+          <div className="text-[11.5px] text-zinc-600 whitespace-nowrap">
+            Created by{' '}
+            <a href="mailto:artur.nawrowski@gmail.com" className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">ArChi</a>
+            {' '}for WebToLearn
           </div>
         </footer>
       </main>
