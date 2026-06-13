@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PdfGuide from './PdfGuide';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -646,7 +645,7 @@ const quickLinks = [
   { label: 'Cloudflare', host: 'cloudflare.com', url: 'https://cloudflare.com', icon: Globe },
 ];
 
-export default function DeployPipelineGuide({ onOpenWizard }) {
+export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf }) {
   const [checked, setChecked] = useState(() => {
     try {
       const params = new URLSearchParams(window.location.hash.slice(1));
@@ -657,7 +656,6 @@ export default function DeployPipelineGuide({ onOpenWizard }) {
   });
   const [openHints, setOpenHints] = useState({});
   const [copied, setCopied] = useState(false);
-  const [showPdf, setShowPdf] = useState(false);
   const [noDomain, setNoDomain] = useState(false);
   const [vercelToken, setVercelToken] = useState(() => localStorage.getItem('vercel_token') || '');
   const [vercelApiStatus, setVercelApiStatus] = useState('idle');
@@ -744,7 +742,6 @@ export default function DeployPipelineGuide({ onOpenWizard }) {
 
   return (
     <>
-    {showPdf && <PdfGuide onClose={() => setShowPdf(false)} />}
     <div
       className="min-h-screen bg-[#0a0a0a] text-zinc-100 antialiased relative overflow-x-hidden"
       style={{ fontFamily: '"EB Garamond", Garamond, "Times New Roman", ui-serif, serif' }}
@@ -789,7 +786,7 @@ export default function DeployPipelineGuide({ onOpenWizard }) {
                 <span className="hidden sm:inline">Wizard</span>
               </Button>
             )}
-            <Button onClick={() => setShowPdf(true)} variant="outline" size="sm" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-purple-400/80 hover:text-purple-300 text-xs h-8 px-3 flex-shrink-0 gap-1.5" title="Przewodnik ebook">
+            <Button onClick={onOpenPdf} variant="outline" size="sm" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-purple-400/80 hover:text-purple-300 text-xs h-8 px-3 flex-shrink-0 gap-1.5" title="Przewodnik ebook">
               <BookOpen className="w-4 h-4" />
               <span className="hidden sm:inline">Ebook</span>
             </Button>
