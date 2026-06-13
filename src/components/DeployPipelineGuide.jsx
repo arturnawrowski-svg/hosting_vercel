@@ -767,41 +767,41 @@ export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf, dark, tog
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-indigo-500/[0.07] blur-3xl rounded-full pointer-events-none" />
 
       <header className="sticky top-0 z-30 backdrop-blur-xl bg-zinc-950/80 border-b border-zinc-900">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3 sm:gap-4">
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <div className="w-7 h-7 rounded-md bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center">
-              <Sparkles className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-4">
+          <div className="flex items-center gap-2.5 flex-shrink-0">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center">
+              <Sparkles className="w-4.5 h-4.5 text-white" strokeWidth={2.5} />
             </div>
-            <span className="text-sm font-semibold tracking-tight hidden sm:block">Pipeline Wdrożeniowy</span>
+            <span className="text-[15px] font-semibold tracking-tight hidden sm:block">Pipeline Wdrożeniowy</span>
           </div>
           <div className="flex-1 flex items-center gap-3 min-w-0">
             <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10.5px] uppercase tracking-[0.18em] text-zinc-500 font-medium">Postęp</span>
-                <span className="text-[11px] font-mono text-zinc-300">{completedSteps}/{totalSteps} · {Math.round(progress)}%</span>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[12px] uppercase tracking-[0.18em] text-zinc-500 font-medium">Postęp</span>
+                <span className="text-[13px] font-mono text-zinc-300">{completedSteps}/{totalSteps} · {Math.round(progress)}%</span>
               </div>
-              <Progress value={progress} className="h-1.5 bg-zinc-900 [&>div]:bg-gradient-to-r [&>div]:from-indigo-500 [&>div]:to-indigo-400 [&>div]:transition-all [&>div]:duration-500" />
+              <Progress value={progress} className="h-2 bg-zinc-900 [&>div]:bg-gradient-to-r [&>div]:from-indigo-500 [&>div]:to-indigo-400 [&>div]:transition-all [&>div]:duration-500" />
             </div>
             {onOpenWizard && (
-              <Button onClick={onOpenWizard} variant="outline" size="sm" title="Auto Deploy Wizard — wgraj pliki i deployuj automatycznie" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-indigo-700/60 text-indigo-400/80 hover:text-indigo-300 text-xs h-8 px-3 flex-shrink-0 gap-1.5">
-                <Rocket className="w-3.5 h-3.5" />
+              <Button onClick={onOpenWizard} variant="outline" size="sm" title="Auto Deploy Wizard — wgraj pliki i deployuj automatycznie" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-indigo-700/60 text-indigo-400/80 hover:text-indigo-300 text-sm h-9 px-3.5 flex-shrink-0 gap-1.5">
+                <Rocket className="w-4 h-4" />
                 <span className="hidden sm:inline">Wizard</span>
               </Button>
             )}
-            <Button onClick={onOpenPdf} variant="outline" size="sm" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-purple-400/80 hover:text-purple-300 text-xs h-8 px-3 flex-shrink-0 gap-1.5" title="Przewodnik ebook">
+            <Button onClick={onOpenPdf} variant="outline" size="sm" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-purple-400/80 hover:text-purple-300 text-sm h-9 px-3.5 flex-shrink-0 gap-1.5" title="Przewodnik ebook">
               <BookOpen className="w-4 h-4" />
               <span className="hidden sm:inline">Ebook</span>
             </Button>
-            <Button onClick={share} variant="outline" size="sm" title="Udostępnij link do tej strony" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 px-3 flex-shrink-0">
-              {copied ? <Check className="w-3 h-3 mr-1.5 text-emerald-400" /> : <Copy className="w-3 h-3 mr-1.5" />}
+            <Button onClick={share} variant="outline" size="sm" title="Udostępnij link do tej strony" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-sm h-9 px-3.5 flex-shrink-0">
+              {copied ? <Check className="w-3.5 h-3.5 mr-1.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 mr-1.5" />}
               <span className="hidden sm:inline">{copied ? 'Skopiowano!' : 'Udostępnij'}</span>
             </Button>
-            <Button onClick={reset} variant="outline" size="sm" title="Resetuj pasek postępu" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 px-3 flex-shrink-0">
-              <RotateCcw className="w-3 h-3 mr-1.5" />
+            <Button onClick={reset} variant="outline" size="sm" title="Resetuj pasek postępu" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-sm h-9 px-3.5 flex-shrink-0">
+              <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
               <span className="hidden sm:inline">Resetuj</span>
             </Button>
-            <Button onClick={toggleTheme} variant="outline" size="sm" title={dark ? 'Przełącz na tryb jasny ☀️' : 'Przełącz na tryb ciemny 🌙'} className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 w-8 px-0 flex-shrink-0 flex items-center justify-center">
-              {dark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+            <Button onClick={toggleTheme} variant="outline" size="sm" title={dark ? 'Przełącz na tryb jasny ☀️' : 'Przełącz na tryb ciemny 🌙'} className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 h-9 w-9 px-0 flex-shrink-0 flex items-center justify-center">
+              {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </Button>
           </div>
         </div>
@@ -813,7 +813,7 @@ export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf, dark, tog
             <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
             <span className="text-[11px] uppercase tracking-[0.15em] text-indigo-300 font-medium">Workflow Produkcyjny</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent mb-4">
+          <h1 className={`text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight bg-gradient-to-b bg-clip-text text-transparent mb-4 ${dark ? 'from-white to-zinc-400' : 'from-zinc-100 to-zinc-400'}`}>
             Konfiguracja Pipeline Wdrożeniowego
           </h1>
           <p className="text-base sm:text-lg text-zinc-500 mb-4 max-w-xl mx-auto leading-relaxed">
