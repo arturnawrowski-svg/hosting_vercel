@@ -30,7 +30,8 @@ import {
   MousePointerClick,
   Lock,
   Zap,
-  BookOpen,
+  FileText,
+  Rocket,
 } from 'lucide-react';
 
 import {
@@ -645,7 +646,7 @@ const quickLinks = [
   { label: 'Cloudflare', host: 'cloudflare.com', url: 'https://cloudflare.com', icon: Globe },
 ];
 
-export default function DeployPipelineGuide() {
+export default function DeployPipelineGuide({ onOpenWizard }) {
   const [checked, setChecked] = useState(() => {
     try {
       const params = new URLSearchParams(window.location.hash.slice(1));
@@ -782,15 +783,23 @@ export default function DeployPipelineGuide() {
               </div>
               <Progress value={progress} className="h-1.5 bg-zinc-900 [&>div]:bg-gradient-to-r [&>div]:from-indigo-500 [&>div]:to-indigo-400 [&>div]:transition-all [&>div]:duration-500" />
             </div>
-            <Button onClick={() => setShowPdf(true)} variant="outline" size="sm" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 px-2.5 flex-shrink-0" title="Otwórz przewodnik PDF">
-              <BookOpen className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline ml-1.5">PDF</span>
+            {onOpenWizard && (
+              <Button onClick={onOpenWizard} variant="outline" size="sm" title="Auto Deploy Wizard — wgraj pliki i deployuj automatycznie" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-indigo-700/60 text-indigo-400/80 hover:text-indigo-300 text-xs h-8 px-3 flex-shrink-0 gap-1.5">
+                <Rocket className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Wizard</span>
+              </Button>
+            )}
+            <Button onClick={() => setShowPdf(true)} variant="outline" size="sm" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-red-400/80 hover:text-red-300 text-xs h-8 px-2.5 flex-shrink-0" title="Przewodnik">
+              <span className="relative flex items-center justify-center">
+                <FileText className="w-4 h-4" />
+                <span className="absolute -bottom-[3px] text-[5.5px] font-black tracking-tight leading-none text-red-400">PDF</span>
+              </span>
             </Button>
-            <Button onClick={share} variant="outline" size="sm" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 px-3 flex-shrink-0">
+            <Button onClick={share} variant="outline" size="sm" title="Udostępnij link do tej strony" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 px-3 flex-shrink-0">
               {copied ? <Check className="w-3 h-3 mr-1.5 text-emerald-400" /> : <Copy className="w-3 h-3 mr-1.5" />}
               <span className="hidden sm:inline">{copied ? 'Skopiowano!' : 'Udostępnij'}</span>
             </Button>
-            <Button onClick={reset} variant="outline" size="sm" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 px-3 flex-shrink-0">
+            <Button onClick={reset} variant="outline" size="sm" title="Resetuj pasek postępu" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 px-3 flex-shrink-0">
               <RotateCcw className="w-3 h-3 mr-1.5" />
               <span className="hidden sm:inline">Resetuj</span>
             </Button>
@@ -964,28 +973,25 @@ export default function DeployPipelineGuide() {
           );
         })()}
 
-        <footer className="mt-20 pt-8 border-t border-zinc-900 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="text-[12px] text-zinc-500 leading-relaxed">
-            <span className="text-zinc-400 font-medium">Eksport z Lovable:</span> Project Settings → Export to GitHub
-            <span className="text-zinc-700 mx-2 hidden sm:inline">·</span>
-            <span className="block sm:inline mt-1 sm:mt-0">
-              <span className="text-zinc-400 font-medium">AI Studio:</span> pobierz ZIP →{' '}
-              <code className="font-mono text-[11px] bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded text-zinc-300">git push</code>{' '}
-              ręcznie
-            </span>
-          </div>
-          <div className="flex flex-col items-end gap-0.5 ml-auto text-right">
-            <div className="text-[10px] text-zinc-600 whitespace-nowrap">
+        <footer className="mt-20 pt-8 border-t border-zinc-800 space-y-1">
+          <p className="text-[12px] text-zinc-400 leading-relaxed">
+            <span className="font-medium text-zinc-300">Eksport z Lovable:</span> Project Settings → Export to GitHub
+            <span className="text-zinc-600 mx-2">·</span>
+            <span className="font-medium text-zinc-300">AI Studio:</span> pobierz ZIP →{' '}
+            <code className="font-mono text-[11px] bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded text-zinc-300">git push</code>{' '}
+            ręcznie
+          </p>
+          <div className="pt-5">
+            <p className="text-[11px] text-zinc-200">
               Created by{' '}
               <a href="mailto:artur.nawrowski@gmail.com" className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">ArChi</a>
               {' '}for{' '}
               <a href="https://webtolearn.pl" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">WebToLearn</a>
-            </div>
-            <div className="text-[9px] text-zinc-700 whitespace-nowrap">
-              Copyright by Krajowe Centrum Badań Sztucznej Inteligencji{' '}
-              <a href="https://kcbsi.pl" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-zinc-400 transition-colors">kcbsi.pl</a>
-              {' '}2026
-            </div>
+            </p>
+            <p className="text-[10px] text-zinc-300 mt-0.5">
+              2026 Copyright by Krajowe Centrum Badań Sztucznej Inteligencji{' '}
+              <a href="https://kcbsi.pl" target="_blank" rel="noopener noreferrer" className="text-zinc-300 hover:text-white transition-colors">kcbsi.pl</a>
+            </p>
           </div>
         </footer>
       </main>
