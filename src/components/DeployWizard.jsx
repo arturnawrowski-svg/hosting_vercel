@@ -4,6 +4,7 @@ import {
   ExternalLink, Eye, EyeOff, AlertCircle, FileText, Zap,
   Rocket, Key, Globe, Sun, Moon,
 } from 'lucide-react';
+import { getT } from '../translations';
 
 // ─── utilities ────────────────────────────────────────────────────────────────
 
@@ -53,7 +54,7 @@ async function ghReq(path, token, init = {}) {
     },
   });
   const json = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(json.message || `GitHub błąd ${r.status}`);
+  if (!r.ok) throw new Error(json.message || `GitHub error ${r.status}`);
   return json;
 }
 
@@ -67,7 +68,7 @@ async function verReq(path, token, init = {}) {
     },
   });
   const json = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(json.error?.message || json.message || `Vercel błąd ${r.status}`);
+  if (!r.ok) throw new Error(json.error?.message || json.message || `Vercel error ${r.status}`);
   return json;
 }
 
@@ -93,7 +94,7 @@ function ExpandGuide({ title, children }) {
   );
 }
 
-function SecretInput({ label, value, onChange, placeholder, guide }) {
+function SecretInput({ label, value, onChange, placeholder, guide, guideTitle }) {
   const [show, setShow] = useState(false);
   return (
     <div>
@@ -116,34 +117,79 @@ function SecretInput({ label, value, onChange, placeholder, guide }) {
           {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
         </button>
       </div>
-      {guide && <ExpandGuide title="Jak uzyskać ten token? →">{guide}</ExpandGuide>}
+      {guide && <ExpandGuide title={guideTitle}>{guide}</ExpandGuide>}
     </div>
+  );
+}
+
+// ─── token guide content (language-dependent JSX) ─────────────────────────────
+
+function GhGuide({ lang }) {
+  const ol = 'list-decimal list-inside space-y-1.5';
+  const s = 'text-zinc-200';
+  const c = 'text-indigo-300 bg-zinc-800 px-1 rounded';
+  if (lang === 'en') return (
+    <ol className={ol}>
+      <li>Go to <strong className={s}>github.com</strong> → click your profile icon → <strong className={s}>Settings</strong></li>
+      <li>At the bottom click <strong className={s}>Developer settings</strong></li>
+      <li>Select <strong className={s}>Personal access tokens → Tokens (classic)</strong></li>
+      <li>Click <strong className={s}>Generate new token (classic)</strong></li>
+      <li>Check the entire <code className={c}>repo</code> checkbox</li>
+      <li>Click <strong className={s}>Generate token</strong> — copy it right away!</li>
+    </ol>
+  );
+  return (
+    <ol className={ol}>
+      <li>Otwórz <strong className={s}>github.com</strong> → kliknij ikonkę profilu → <strong className={s}>Settings</strong></li>
+      <li>Na dole menu kliknij <strong className={s}>Developer settings</strong></li>
+      <li>Wybierz <strong className={s}>Personal access tokens → Tokens (classic)</strong></li>
+      <li>Kliknij <strong className={s}>Generate new token (classic)</strong></li>
+      <li>Zaznacz cały checkbox <code className={c}>repo</code></li>
+      <li>Kliknij <strong className={s}>Generate token</strong> — skopiuj od razu!</li>
+    </ol>
+  );
+}
+
+function VerGuide({ lang }) {
+  const ol = 'list-decimal list-inside space-y-1.5';
+  const s = 'text-zinc-200';
+  const c = 'text-indigo-300 bg-zinc-800 px-1 rounded';
+  const w = 'mt-1 text-zinc-500';
+  const ws = 'text-zinc-300';
+  if (lang === 'en') return (
+    <ol className={ol}>
+      <li>Go to <strong className={s}>vercel.com</strong> → click your avatar → <strong className={s}>Account Settings</strong></li>
+      <li>Click the <strong className={s}>Tokens</strong> tab</li>
+      <li>Click <strong className={s}>Create</strong></li>
+      <li>Enter a name e.g. <code className={c}>wizard</code>, Scope: <strong className={s}>Full Account</strong></li>
+      <li>Copy the token — it only appears once!</li>
+      <p className={w}>⚠️ Make sure GitHub is connected in Vercel: <strong className={ws}>Settings → Integrations → GitHub</strong></p>
+    </ol>
+  );
+  return (
+    <ol className={ol}>
+      <li>Otwórz <strong className={s}>vercel.com</strong> → kliknij swój avatar → <strong className={s}>Account Settings</strong></li>
+      <li>Kliknij zakładkę <strong className={s}>Tokens</strong></li>
+      <li>Kliknij <strong className={s}>Create</strong></li>
+      <li>Wpisz nazwę np. <code className={c}>wizard</code>, Scope: <strong className={s}>Full Account</strong></li>
+      <li>Skopiuj token — pojawi się tylko raz!</li>
+      <p className={w}>⚠️ Upewnij się że masz podłączone GitHub w Vercel: <strong className={ws}>Settings → Integrations → GitHub</strong></p>
+    </ol>
   );
 }
 
 // ─── constants ────────────────────────────────────────────────────────────────
 
-const TASK_LIST = [
-  'Weryfikacja tokenu GitHub',
-  'Weryfikacja tokenu Vercel',
-  'Tworzenie repozytorium na GitHub',
-  'Upload plików',
-  'Tworzenie projektu na Vercel',
-  'Wyzwalanie deployu',
-  'Czekanie na deployment (ok. 1–2 min)',
-];
-
-const FRAMEWORKS = [
-  { id: null,     label: '🌐 Statyczna strona (HTML / CSS / JS)' },
-  { id: 'vite',   label: '⚡ Vite / React / Vue' },
-  { id: 'nextjs', label: '▲ Next.js' },
-];
-
+const FRAMEWORK_IDS = [null, 'vite', 'nextjs'];
 const CONFETTI = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#f97316'];
 
 // ─── main export ──────────────────────────────────────────────────────────────
 
-export default function DeployWizard({ onBack, dark, toggleTheme }) {
+export default function DeployWizard({ onBack, dark, toggleTheme, lang = 'pl' }) {
+  const tw = getT(lang).wizard;
+  const taskList = tw.deploying.tasks;
+  const frameworks = FRAMEWORK_IDS.map((id, i) => ({ id, label: tw.project.frameworks[i] }));
+
   const [screen, setScreen]         = useState(0);
   const [ghToken, setGhToken]       = useState('');
   const [verToken, setVerToken]     = useState('');
@@ -152,7 +198,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
   const [framework, setFramework]   = useState(null);
   const [files, setFiles]           = useState([]);
   const [dragging, setDragging]     = useState(false);
-  const [tasks, setTasks]           = useState(TASK_LIST.map(() => ({ s: 'idle', msg: '' })));
+  const [tasks, setTasks]           = useState(taskList.map(() => ({ s: 'idle', msg: '' })));
   const [liveUrl, setLiveUrl]       = useState('');
   const [errorMsg, setErrorMsg]     = useState('');
   const [validating, setValidating] = useState(false);
@@ -214,7 +260,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
 
   async function runDeploy() {
     setScreen(3);
-    setTasks(TASK_LIST.map(() => ({ s: 'idle', msg: '' })));
+    setTasks(taskList.map(() => ({ s: 'idle', msg: '' })));
     setErrorMsg('');
 
     try {
@@ -251,7 +297,6 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
       for (let i = 0; i < files.length; i++) {
         const f = files[i];
         const filePath = f.path;
-        // Get SHA if file already exists (needed for updates)
         let sha;
         try {
           const existing = await ghReq(
@@ -275,7 +320,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
         );
         setTask(3, 'running', `${i + 1}/${total}`);
       }
-      setTask(3, 'done', `${total} plików`);
+      setTask(3, 'done', `${total}`);
 
       // 4 — Create Vercel project
       setTask(4, 'running');
@@ -314,11 +359,10 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
         });
         deployUrl = dep.url || '';
       } catch {
-        // Might auto-trigger from project creation — check latest
         const deps = await verReq(`/v6/deployments?projectId=${project.id}&limit=1`, verToken);
         const latest = (deps.deployments || [])[0];
         if (latest) deployUrl = latest.url || '';
-        else throw new Error('Nie udało się wyzwolić deployu. Sprawdź czy Vercel ma podłączone GitHub.');
+        else throw new Error(tw.deploying.couldNotDeploy);
       }
       setTask(5, 'done');
 
@@ -371,14 +415,14 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center">
             <Rocket className="w-3.5 h-3.5 text-white" />
           </div>
-          <span className="font-semibold text-sm">Auto Deploy Wizard</span>
+          <span className="font-semibold text-sm">{tw.intro.heading}</span>
           <span className="text-[10px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded-full font-medium">beta</span>
         </div>
         <div className="flex items-center gap-2">
           {toggleTheme && (
             <button
               onClick={toggleTheme}
-              title={dark ? 'Tryb jasny ☀️' : 'Tryb ciemny 🌙'}
+              title={dark ? tw.header.lightMode : tw.header.darkMode}
               className="w-7 h-7 flex items-center justify-center rounded-lg border border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 transition-colors"
             >
               {dark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
@@ -389,7 +433,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
             className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
           >
             <ChevronLeft className="w-3.5 h-3.5" />
-            Wróć do przewodnika
+            {tw.header.back}
           </button>
         </div>
       </header>
@@ -397,7 +441,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
       {/* Step pills */}
       {screen >= 1 && screen <= 3 && (
         <div className="flex items-center justify-center gap-1.5 py-3 bg-zinc-900/30 border-b border-zinc-800/50">
-          {['Tokeny', 'Projekt', 'Deploy'].map((s, i) => {
+          {tw.steps.map((s, i) => {
             const idx = i + 1;
             const done   = screen > idx;
             const active = screen === idx;
@@ -427,18 +471,14 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
                 <Rocket className="w-9 h-9 text-indigo-400" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold">Auto Deploy Wizard</h1>
-                <p className="text-zinc-400 mt-2">Wgraj pliki → GitHub → Vercel w 3 minuty.</p>
-                <p className="text-zinc-500 text-sm mt-1">Bez terminala. Bez konfiguracji. Za darmo.</p>
+                <h1 className="text-3xl font-bold">{tw.intro.heading}</h1>
+                <p className="text-zinc-400 mt-2">{tw.intro.sub1}</p>
+                <p className="text-zinc-500 text-sm mt-1">{tw.intro.sub2}</p>
               </div>
             </div>
 
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 text-left space-y-4">
-              {[
-                { e: '🗂️', t: 'Tworzy repozytorium na GitHub',    d: 'Twoje pliki lądują na GitHub automatycznie' },
-                { e: '⚡', t: 'Deployuje projekt na Vercel',      d: 'Strona online w ~2 minuty, za darmo' },
-                { e: '🔑', t: 'Potrzebujesz 2 tokenów dostępu',  d: 'Pokażemy krok po kroku jak je zdobyć' },
-              ].map(({ e, t, d }) => (
+              {tw.intro.features.map(({ e, t, d }) => (
                 <div key={t} className="flex gap-3">
                   <span className="text-2xl leading-none">{e}</span>
                   <div>
@@ -453,7 +493,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
               onClick={() => setScreen(1)}
               className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-semibold px-8 py-3 rounded-xl transition-colors text-sm shadow-lg shadow-indigo-500/20"
             >
-              Zaczynamy <ChevronRight className="w-4 h-4" />
+              {tw.intro.startBtn} <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         )}
@@ -462,42 +502,26 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
         {screen === 1 && (
           <div className="wiz-slide space-y-6">
             <div>
-              <h2 className="text-xl font-bold">Tokeny dostępu</h2>
-              <p className="text-xs text-zinc-500 mt-1">Używane tylko w Twojej przeglądarce — nie trafiają na nasze serwery.</p>
+              <h2 className="text-xl font-bold">{tw.tokens.heading}</h2>
+              <p className="text-xs text-zinc-500 mt-1">{tw.tokens.sub}</p>
             </div>
 
             <SecretInput
-              label="GitHub Personal Access Token"
+              label={tw.tokens.ghLabel}
               value={ghToken}
               onChange={setGhToken}
               placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-              guide={
-                <ol className="list-decimal list-inside space-y-1.5">
-                  <li>Otwórz <strong className="text-zinc-200">github.com</strong> → kliknij ikonkę profilu → <strong className="text-zinc-200">Settings</strong></li>
-                  <li>Na dole menu kliknij <strong className="text-zinc-200">Developer settings</strong></li>
-                  <li>Wybierz <strong className="text-zinc-200">Personal access tokens → Tokens (classic)</strong></li>
-                  <li>Kliknij <strong className="text-zinc-200">Generate new token (classic)</strong></li>
-                  <li>Zaznacz cały checkbox <code className="text-indigo-300 bg-zinc-800 px-1 rounded">repo</code></li>
-                  <li>Kliknij <strong className="text-zinc-200">Generate token</strong> — skopiuj od razu!</li>
-                </ol>
-              }
+              guideTitle={tw.tokens.ghGuide}
+              guide={<GhGuide lang={lang} />}
             />
 
             <SecretInput
-              label="Vercel Token"
+              label={tw.tokens.verLabel}
               value={verToken}
               onChange={setVerToken}
               placeholder="xxxxxxxxxxxxxxxxxxxx"
-              guide={
-                <ol className="list-decimal list-inside space-y-1.5">
-                  <li>Otwórz <strong className="text-zinc-200">vercel.com</strong> → kliknij swój avatar → <strong className="text-zinc-200">Account Settings</strong></li>
-                  <li>Kliknij zakładkę <strong className="text-zinc-200">Tokens</strong></li>
-                  <li>Kliknij <strong className="text-zinc-200">Create</strong></li>
-                  <li>Wpisz nazwę np. <code className="text-indigo-300 bg-zinc-800 px-1 rounded">wizard</code>, Scope: <strong className="text-zinc-200">Full Account</strong></li>
-                  <li>Skopiuj token — pojawi się tylko raz!</li>
-                  <p className="mt-1 text-zinc-500">⚠️ Upewnij się że masz podłączone GitHub w Vercel: <strong className="text-zinc-300">Settings → Integrations → GitHub</strong></p>
-                </ol>
-              }
+              guideTitle={tw.tokens.verGuide}
+              guide={<VerGuide lang={lang} />}
             />
 
             {errorMsg && (
@@ -512,7 +536,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
                 onClick={() => setScreen(0)}
                 className="px-4 py-2.5 text-sm text-zinc-500 hover:text-zinc-200 transition-colors"
               >
-                ← Wróć
+                {tw.tokens.backBtn}
               </button>
               <button
                 onClick={validateTokens}
@@ -520,8 +544,8 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
                 className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
               >
                 {validating
-                  ? <><Loader2 className="w-4 h-4 animate-spin" /> Weryfikuję tokeny...</>
-                  : <><Key className="w-4 h-4" /> Weryfikuj i dalej</>}
+                  ? <><Loader2 className="w-4 h-4 animate-spin" /> {tw.tokens.verifying}</>
+                  : <><Key className="w-4 h-4" /> {tw.tokens.nextBtn}</>}
               </button>
             </div>
           </div>
@@ -531,20 +555,20 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
         {screen === 2 && (
           <div className="wiz-slide space-y-6">
             <div>
-              <h2 className="text-xl font-bold">Twój projekt</h2>
+              <h2 className="text-xl font-bold">{tw.project.heading}</h2>
               <p className="text-xs text-zinc-500 mt-1">
-                Zalogowany jako <span className="text-indigo-300 font-mono">@{ghUser}</span>
+                {tw.project.loggedAs} <span className="text-indigo-300 font-mono">@{ghUser}</span>
               </p>
             </div>
 
             {/* Name */}
             <div>
-              <label className="block text-[13px] font-medium text-zinc-300 mb-1.5">Nazwa projektu</label>
+              <label className="block text-[13px] font-medium text-zinc-300 mb-1.5">{tw.project.nameLabel}</label>
               <input
                 type="text"
                 value={projectName}
                 onChange={e => setProjectName(slugify(e.target.value))}
-                placeholder="moja-strona"
+                placeholder={tw.project.namePlaceholder}
                 spellCheck={false}
                 className="w-full bg-zinc-800/80 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-sm text-zinc-100 font-mono placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/25 transition-colors"
               />
@@ -557,9 +581,9 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
 
             {/* Framework */}
             <div>
-              <label className="block text-[13px] font-medium text-zinc-300 mb-1.5">Typ projektu</label>
+              <label className="block text-[13px] font-medium text-zinc-300 mb-1.5">{tw.project.frameworkLabel}</label>
               <div className="space-y-1.5">
-                {FRAMEWORKS.map(fw => (
+                {frameworks.map(fw => (
                   <button
                     key={String(fw.id)}
                     onClick={() => setFramework(fw.id)}
@@ -583,8 +607,8 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
             {/* Drop zone */}
             <div>
               <label className="block text-[13px] font-medium text-zinc-300 mb-1.5">
-                Pliki projektu
-                <span className="text-zinc-600 font-normal ml-2">(przeciągnij folder lub wybierz pliki)</span>
+                {tw.project.filesLabel}
+                <span className="text-zinc-600 font-normal ml-2">{tw.project.filesSub}</span>
               </label>
               <div
                 onDragOver={e => { e.preventDefault(); setDragging(true); }}
@@ -598,8 +622,8 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
                 }`}
               >
                 <Upload className="w-7 h-7 text-zinc-500 mx-auto mb-2" />
-                <p className="text-sm text-zinc-300 font-medium">Przeciągnij pliki lub folder tutaj</p>
-                <p className="text-xs text-zinc-600 mt-0.5">lub kliknij aby wybrać</p>
+                <p className="text-sm text-zinc-300 font-medium">{tw.project.dropText}</p>
+                <p className="text-xs text-zinc-600 mt-0.5">{tw.project.dropSub}</p>
                 <input
                   ref={fileRef}
                   type="file"
@@ -612,12 +636,12 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
               {files.length > 0 && (
                 <div className="mt-2 bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
                   <div className="flex items-center justify-between px-3.5 py-2 border-b border-zinc-800">
-                    <span className="text-xs text-zinc-500">{files.length} plików załadowanych</span>
+                    <span className="text-xs text-zinc-500">{tw.project.filesLoaded(files.length)}</span>
                     <button
                       onClick={() => setFiles([])}
                       className="text-xs text-zinc-600 hover:text-red-400 transition-colors"
                     >
-                      Usuń wszystkie
+                      {tw.project.removeAll}
                     </button>
                   </div>
                   <div className="max-h-44 overflow-y-auto">
@@ -643,14 +667,14 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
                 onClick={() => setScreen(1)}
                 className="px-4 py-2.5 text-sm text-zinc-500 hover:text-zinc-200 transition-colors"
               >
-                ← Wróć
+                {tw.project.backBtn}
               </button>
               <button
                 onClick={runDeploy}
                 disabled={!projectName || files.length === 0}
                 className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-xl transition-colors text-sm shadow-lg shadow-indigo-500/20"
               >
-                <Zap className="w-4 h-4" /> Deployuj automatycznie!
+                <Zap className="w-4 h-4" /> {tw.project.deployBtn}
               </button>
             </div>
           </div>
@@ -660,15 +684,15 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
         {screen === 3 && (
           <div className="wiz-slide space-y-6">
             <div>
-              <h2 className="text-xl font-bold">Deployjemy...</h2>
-              <p className="text-sm text-zinc-500 mt-1">Zrób sobie kawę ☕ — robimy wszystko za Ciebie</p>
+              <h2 className="text-xl font-bold">{tw.deploying.heading}</h2>
+              <p className="text-sm text-zinc-500 mt-1">{tw.deploying.sub}</p>
             </div>
 
             {/* Progress bar */}
             <div className="w-full bg-zinc-800 rounded-full h-1">
               <div
                 className="bg-indigo-500 h-1 rounded-full transition-all duration-700"
-                style={{ width: `${(doneTasks / TASK_LIST.length) * 100}%` }}
+                style={{ width: `${(doneTasks / taskList.length) * 100}%` }}
               />
             </div>
 
@@ -695,7 +719,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
                     s === 'error'   ? 'text-red-300'  :
                     'text-zinc-700'
                   }`}>
-                    {TASK_LIST[i]}
+                    {taskList[i]}
                   </span>
                   {msg && <span className="text-xs font-mono text-zinc-500">{msg}</span>}
                 </div>
@@ -705,14 +729,14 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
             {errorMsg && (
               <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 space-y-2">
                 <p className="text-sm font-medium text-red-300 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4" /> Błąd
+                  <AlertCircle className="w-4 h-4" /> {tw.deploying.errorTitle}
                 </p>
                 <p className="text-xs text-red-400/80 font-mono break-all">{errorMsg}</p>
                 <button
                   onClick={() => setScreen(2)}
                   className="text-xs text-zinc-500 hover:text-zinc-300 underline"
                 >
-                  ← Wróć i popraw
+                  {tw.deploying.backBtn}
                 </button>
               </div>
             )}
@@ -742,15 +766,15 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
 
             <div className="space-y-3">
               <div className="text-5xl">🎉</div>
-              <h2 className="text-3xl font-bold">Strona jest live!</h2>
-              <p className="text-zinc-400 text-sm">Projekt wdrożony na Vercel — gratulacje!</p>
+              <h2 className="text-3xl font-bold">{tw.done.heading}</h2>
+              <p className="text-zinc-400 text-sm">{tw.done.sub}</p>
             </div>
 
             {liveUrl && (
               <div className="bg-zinc-900 border border-emerald-500/30 rounded-2xl p-6 space-y-4">
                 <div className="flex items-center justify-center gap-1.5">
                   <Globe className="w-3.5 h-3.5 text-emerald-400" />
-                  <p className="text-[11px] text-emerald-400 uppercase tracking-widest font-medium">Twoja strona</p>
+                  <p className="text-[11px] text-emerald-400 uppercase tracking-widest font-medium">{tw.done.siteLabel}</p>
                 </div>
                 <a
                   href={liveUrl}
@@ -766,7 +790,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 py-2.5 rounded-xl transition-colors text-sm"
                 >
-                  Otwórz stronę <ExternalLink className="w-4 h-4" />
+                  {tw.done.openBtn} <ExternalLink className="w-4 h-4" />
                 </a>
               </div>
             )}
@@ -780,13 +804,13 @@ export default function DeployWizard({ onBack, dark, toggleTheme }) {
                 }}
                 className="block w-full text-sm text-zinc-500 hover:text-zinc-300 transition-colors py-2"
               >
-                Deployuj kolejny projekt
+                {tw.done.deployAnother}
               </button>
               <button
                 onClick={onBack}
                 className="block w-full text-sm text-zinc-500 hover:text-zinc-300 transition-colors py-2"
               >
-                ← Wróć do przewodnika
+                {tw.done.backBtn}
               </button>
             </div>
           </div>

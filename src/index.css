@@ -37,3 +37,12 @@
   --grid-color: rgba(99, 102, 241, 0.06);
   --rail-color: rgba(63, 63, 70, 0.6);
 }
+
+@media print {
+  header, aside, .no-print { display: none !important; }
+  .grid-bg, .timeline-rail { display: none !important; }
+  [class*="fixed"], [class*="sticky"] { position: static !important; }
+  body { background: white !important; }
+  * { color: black !important; box-shadow: none !important; }
+  main { padding-top: 1.5rem !important; }
+}
