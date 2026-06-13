@@ -961,6 +961,21 @@ export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf, dark, tog
 
       <main className="relative max-w-3xl mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-32">
 
+        {/* ── Quick links — zawsze widoczne tuż pod headerem ── */}
+        <div className="flex items-center gap-1.5 mb-6 flex-wrap">
+          <span className="text-[10px] uppercase tracking-[0.14em] text-zinc-600 font-medium mr-0.5">{t.sidebar.label}:</span>
+          {quickLinks.map((link) => {
+            const I = link.icon;
+            return (
+              <a key={link.host} href={link.url} target="_blank" rel="noopener noreferrer"
+                 className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-zinc-800 text-zinc-500 hover:text-zinc-200 hover:border-zinc-600 hover:bg-zinc-900/60 transition-all text-[11.5px] font-medium">
+                <I className="w-3 h-3 flex-shrink-0" strokeWidth={1.5} />
+                <span>{link.label}</span>
+              </a>
+            );
+          })}
+        </div>
+
         {/* ── Interaktywny Kreator — CTA banner ── */}
         {!bannerDismissed && onOpenWizard && !wizardOpen && (
           <div className="mb-10" style={{ animation: 'fadeUp 0.5s ease-out 0.1s both' }}>
@@ -1173,24 +1188,7 @@ export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf, dark, tog
           );
         })()}
 
-        {/* Quick links — compact inline strip */}
-        <div className="mt-14 mb-2">
-          <div className="flex items-center justify-center gap-1.5 flex-wrap">
-            <span className="text-[10px] uppercase tracking-[0.14em] text-zinc-600 font-medium mr-1">{t.sidebar.label}:</span>
-            {quickLinks.map((link) => {
-              const I = link.icon;
-              return (
-                <a key={link.host} href={link.url} target="_blank" rel="noopener noreferrer"
-                   className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-zinc-800 text-zinc-500 hover:text-zinc-200 hover:border-zinc-600 hover:bg-zinc-900/60 transition-all text-[11.5px] font-medium">
-                  <I className="w-3 h-3 flex-shrink-0" strokeWidth={1.5} />
-                  <span>{link.label}</span>
-                </a>
-              );
-            })}
-          </div>
-        </div>
-
-        <footer className="mt-6 pt-6 border-t border-zinc-800 text-center space-y-1.5">
+        <footer className="mt-20 pt-8 border-t border-zinc-800 text-center space-y-1.5">
           <p className="text-sm text-zinc-400">
             {t.footer.createdBy}{' '}
             <a href="mailto:artur.nawrowski@gmail.com" className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">ArChi</a>
