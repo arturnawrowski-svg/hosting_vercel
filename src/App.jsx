@@ -4,8 +4,15 @@ import DeployWizard from './components/DeployWizard';
 import './index.css';
 
 export default function App() {
-  const [showWizard, setShowWizard] = useState(false);
-  return showWizard
-    ? <DeployWizard onBack={() => setShowWizard(false)} />
-    : <DeployPipelineGuide onOpenWizard={() => setShowWizard(true)} />;
+  const isWizard = new URLSearchParams(window.location.search).has('wizard');
+  const [showWizard] = useState(isWizard);
+
+  function openWizard() {
+    window.open(`${window.location.origin}/?wizard`, '_blank');
+  }
+
+  if (showWizard) {
+    return <DeployWizard onBack={() => { window.location.href = '/'; }} />;
+  }
+  return <DeployPipelineGuide onOpenWizard={openWizard} />;
 }

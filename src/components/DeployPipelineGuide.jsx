@@ -30,7 +30,7 @@ import {
   MousePointerClick,
   Lock,
   Zap,
-  FileText,
+  BookOpen,
   Rocket,
 } from 'lucide-react';
 
@@ -789,11 +789,9 @@ export default function DeployPipelineGuide({ onOpenWizard }) {
                 <span className="hidden sm:inline">Wizard</span>
               </Button>
             )}
-            <Button onClick={() => setShowPdf(true)} variant="outline" size="sm" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-red-400/80 hover:text-red-300 text-xs h-8 px-2.5 flex-shrink-0" title="Przewodnik">
-              <span className="relative flex items-center justify-center">
-                <FileText className="w-4 h-4" />
-                <span className="absolute -bottom-[3px] text-[5.5px] font-black tracking-tight leading-none text-red-400">PDF</span>
-              </span>
+            <Button onClick={() => setShowPdf(true)} variant="outline" size="sm" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-purple-400/80 hover:text-purple-300 text-xs h-8 px-3 flex-shrink-0 gap-1.5" title="Przewodnik ebook">
+              <BookOpen className="w-4 h-4" />
+              <span className="hidden sm:inline">Ebook</span>
             </Button>
             <Button onClick={share} variant="outline" size="sm" title="Udostępnij link do tej strony" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 px-3 flex-shrink-0">
               {copied ? <Check className="w-3 h-3 mr-1.5 text-emerald-400" /> : <Copy className="w-3 h-3 mr-1.5" />}
