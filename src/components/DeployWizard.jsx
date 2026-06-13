@@ -2,7 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import {
   Upload, ChevronRight, ChevronLeft, Check, X, Loader2,
   ExternalLink, Eye, EyeOff, AlertCircle, FileText, Zap,
-  Rocket, Key, Globe,
+  Rocket, Key, Globe, Sun, Moon,
 } from 'lucide-react';
 
 // ─── utilities ────────────────────────────────────────────────────────────────
@@ -143,7 +143,7 @@ const CONFETTI = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f
 
 // ─── main export ──────────────────────────────────────────────────────────────
 
-export default function DeployWizard({ onBack }) {
+export default function DeployWizard({ onBack, dark, toggleTheme }) {
   const [screen, setScreen]         = useState(0);
   const [ghToken, setGhToken]       = useState('');
   const [verToken, setVerToken]     = useState('');
@@ -374,13 +374,24 @@ export default function DeployWizard({ onBack }) {
           <span className="font-semibold text-sm">Auto Deploy Wizard</span>
           <span className="text-[10px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded-full font-medium">beta</span>
         </div>
-        <button
-          onClick={onBack}
-          className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
-        >
-          <ChevronLeft className="w-3.5 h-3.5" />
-          Wróć do przewodnika
-        </button>
+        <div className="flex items-center gap-2">
+          {toggleTheme && (
+            <button
+              onClick={toggleTheme}
+              title={dark ? 'Tryb jasny ☀️' : 'Tryb ciemny 🌙'}
+              className="w-7 h-7 flex items-center justify-center rounded-lg border border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 transition-colors"
+            >
+              {dark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+            </button>
+          )}
+          <button
+            onClick={onBack}
+            className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+          >
+            <ChevronLeft className="w-3.5 h-3.5" />
+            Wróć do przewodnika
+          </button>
+        </div>
       </header>
 
       {/* Step pills */}

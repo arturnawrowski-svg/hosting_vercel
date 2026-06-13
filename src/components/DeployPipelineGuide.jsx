@@ -31,6 +31,8 @@ import {
   Zap,
   BookOpen,
   Rocket,
+  Sun,
+  Moon,
 } from 'lucide-react';
 
 import {
@@ -645,7 +647,7 @@ const quickLinks = [
   { label: 'Cloudflare', host: 'cloudflare.com', url: 'https://cloudflare.com', icon: Globe },
 ];
 
-export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf }) {
+export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf, dark, toggleTheme }) {
   const [checked, setChecked] = useState(() => {
     try {
       const params = new URLSearchParams(window.location.hash.slice(1));
@@ -743,7 +745,7 @@ export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf }) {
   return (
     <>
     <div
-      className="min-h-screen bg-[#0a0a0a] text-zinc-100 antialiased relative overflow-x-hidden"
+      className="min-h-screen bg-zinc-950 text-zinc-100 antialiased relative overflow-x-hidden"
       style={{ fontFamily: '"EB Garamond", Garamond, "Times New Roman", ui-serif, serif' }}
     >
       <style>{`
@@ -753,18 +755,18 @@ export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf }) {
         @keyframes popIn { 0% { transform: scale(0.85); opacity:0; } 60% { transform: scale(1.04); } 100% { transform: scale(1); opacity:1; } }
         .font-mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace; }
         .grid-bg {
-          background-image: linear-gradient(rgba(99,102,241,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.06) 1px, transparent 1px);
+          background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
           background-size: 56px 56px;
           mask-image: radial-gradient(ellipse 70% 50% at 50% 0%, black 30%, transparent 80%);
           -webkit-mask-image: radial-gradient(ellipse 70% 50% at 50% 0%, black 30%, transparent 80%);
         }
-        .timeline-rail { background: linear-gradient(to bottom, transparent 0%, rgba(63,63,70,0.6) 8%, rgba(63,63,70,0.6) 92%, transparent 100%); }
+        .timeline-rail { background: linear-gradient(to bottom, transparent 0%, var(--rail-color) 8%, var(--rail-color) 92%, transparent 100%); }
       `}</style>
 
       <div className="absolute inset-0 grid-bg pointer-events-none" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-indigo-500/[0.07] blur-3xl rounded-full pointer-events-none" />
 
-      <header className="sticky top-0 z-30 backdrop-blur-xl bg-[#0a0a0a]/80 border-b border-zinc-900">
+      <header className="sticky top-0 z-30 backdrop-blur-xl bg-zinc-950/80 border-b border-zinc-900">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3 sm:gap-4">
           <div className="flex items-center gap-2 flex-shrink-0">
             <div className="w-7 h-7 rounded-md bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center">
@@ -797,6 +799,9 @@ export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf }) {
             <Button onClick={reset} variant="outline" size="sm" title="Resetuj pasek postępu" className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 px-3 flex-shrink-0">
               <RotateCcw className="w-3 h-3 mr-1.5" />
               <span className="hidden sm:inline">Resetuj</span>
+            </Button>
+            <Button onClick={toggleTheme} variant="outline" size="sm" title={dark ? 'Przełącz na tryb jasny ☀️' : 'Przełącz na tryb ciemny 🌙'} className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-8 w-8 px-0 flex-shrink-0 flex items-center justify-center">
+              {dark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
             </Button>
           </div>
         </div>
