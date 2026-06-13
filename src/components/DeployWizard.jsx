@@ -417,7 +417,7 @@ export default function DeployWizard({ onBack, onClose, onStepsDone, dark, toggl
   const doneTasks = tasks.filter(t => t.s === 'done').length;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100" style={{ fontFamily: "'EB Garamond', Georgia, serif" }}>
       <style>{`
         @keyframes confettiFall {
           0%   { transform: translateY(-30px) rotate(0deg);   opacity: 1; }
