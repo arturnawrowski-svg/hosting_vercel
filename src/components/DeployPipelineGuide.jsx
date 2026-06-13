@@ -729,6 +729,9 @@ export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf, dark, tog
   const [vercelApiData, setVercelApiData] = useState(null);
   const [apiVerified, setApiVerified] = useState({});
   const [installPrompt, setInstallPrompt] = useState(null);
+  const [bannerDismissed, setBannerDismissed] = useState(
+    () => localStorage.getItem('wizard_banner_dismissed') === '1'
+  );
 
   useEffect(() => {
     if (!vercelToken) { setVercelApiStatus('idle'); setApiVerified({}); return; }
@@ -764,6 +767,19 @@ export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf, dark, tog
   }, [vercelToken]);
 
   useEffect(() => {
+    const sync = () => {
+      try {
+        const steps = JSON.parse(localStorage.getItem('wizard_steps') || '{}');
+        if (Object.keys(steps).length > 0) setChecked(prev => ({ ...prev, ...steps }));
+      } catch {}
+    };
+    sync();
+    const handler = (e) => { if (e.key === 'wizard_steps' || e.key === null) sync(); };
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+  }, []);
+
+  useEffect(() => {
     const handler = (e) => { e.preventDefault(); setInstallPrompt(e); };
     window.addEventListener('beforeinstallprompt', handler);
     window.addEventListener('appinstalled', () => setInstallPrompt(null));
@@ -772,7 +788,17 @@ export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf, dark, tog
 
   const toggleStep = (key) => setChecked((prev) => ({ ...prev, [key]: !prev[key] }));
   const toggleHint = (key) => setOpenHints((prev) => ({ ...prev, [key]: !prev[key] }));
-  const reset = () => { setChecked({}); setOpenHints({}); window.history.replaceState(null, '', window.location.pathname); };
+  const reset = () => {
+    setChecked({});
+    setOpenHints({});
+    localStorage.removeItem('wizard_steps');
+    window.history.replaceState(null, '', window.location.pathname);
+  };
+
+  const dismissBanner = () => {
+    setBannerDismissed(true);
+    localStorage.setItem('wizard_banner_dismissed', '1');
+  };
 
   const share = async () => {
     const url = `${window.location.href.split('#')[0]}#s=${encodeChecked(checked)}`;
@@ -885,11 +911,10 @@ export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf, dark, tog
               <Progress value={progress} className="h-2 bg-zinc-900 [&>div]:bg-gradient-to-r [&>div]:from-indigo-500 [&>div]:to-indigo-400 [&>div]:transition-all [&>div]:duration-500" />
             </div>
 
-            {/* Wizard — always visible */}
+            {/* Wizard — icon only in header; main CTA is the banner */}
             {onOpenWizard && (
-              <Button onClick={onOpenWizard} variant="outline" size="sm" title={t.header.wizardTitle} className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-indigo-700/60 text-indigo-400/80 hover:text-indigo-300 text-sm h-9 px-3 sm:px-3.5 flex-shrink-0 gap-1.5">
+              <Button onClick={onOpenWizard} variant="outline" size="sm" title={t.header.wizardTitle} className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-indigo-700/60 text-indigo-400/80 hover:text-indigo-300 h-9 w-9 px-0 flex-shrink-0 flex items-center justify-center">
                 <Rocket className="w-4 h-4" />
-                <span className="hidden sm:inline">{t.header.wizardBtn}</span>
               </Button>
             )}
 
@@ -946,7 +971,48 @@ export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf, dark, tog
         </div>
       </header>
 
-      <main className="relative max-w-3xl mx-auto px-4 sm:px-6 pt-24 sm:pt-32 pb-32">
+      <main className="relative max-w-3xl mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-32">
+
+        {/* ── Interaktywny Kreator — CTA banner ── */}
+        {!bannerDismissed && onOpenWizard && (
+          <div className="mb-10" style={{ animation: 'fadeUp 0.5s ease-out 0.1s both' }}>
+            <div className="relative overflow-hidden rounded-2xl shadow-xl shadow-indigo-500/20">
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-700" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(255,255,255,0.07),transparent_60%)]" />
+              <div className="relative flex items-center justify-between gap-4 px-5 py-4">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center flex-shrink-0">
+                    <Rocket className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm sm:text-base font-semibold text-white leading-tight">
+                      Wdróż projekt automatycznie
+                    </p>
+                    <p className="text-xs text-indigo-200 mt-0.5 hidden sm:block">
+                      GitHub + Vercel w 3 minuty — bez terminala, bez konfiguracji
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <button
+                    onClick={onOpenWizard}
+                    className="bg-white text-indigo-700 hover:bg-indigo-50 active:scale-[0.97] font-semibold text-sm px-4 py-2 rounded-xl transition-all shadow-sm whitespace-nowrap"
+                  >
+                    Interaktywny Kreator →
+                  </button>
+                  <button
+                    onClick={dismissBanner}
+                    className="w-7 h-7 flex items-center justify-center text-white/40 hover:text-white/80 transition-colors rounded-lg hover:bg-white/10 flex-shrink-0"
+                    aria-label="Zamknij"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <section className="text-center mb-16 sm:mb-24" style={{ animation: 'fadeUp 0.6s ease-out' }}>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />

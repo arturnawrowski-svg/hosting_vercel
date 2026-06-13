@@ -8,8 +8,8 @@ export const translations = {
     header: {
       appTitle: 'Ścieżka Wdrożeniowa',
       progress: 'Postęp',
-      wizardBtn: 'Wizard',
-      wizardTitle: 'Auto-wdrożenie — wgraj pliki i wdróż automatycznie',
+      wizardBtn: 'Kreator',
+      wizardTitle: 'Interaktywny Kreator — wgraj pliki i wdróż automatycznie',
       ebookBtn: 'Ebook',
       shareBtn: 'Udostępnij',
       copiedBtn: 'Skopiowano!',
@@ -258,7 +258,7 @@ export const translations = {
         sub2: 'Bez terminala. Bez konfiguracji. Za darmo.',
         features: [
           { e: '🗂️', t: 'Tworzy repozytorium na GitHub',    d: 'Twoje pliki lądują na GitHub automatycznie' },
-          { e: '⚡', t: 'Wdraża projekt na Vercel',          d: 'Strona online w ~2 minuty, za darmo' },
+          { e: '⚡', t: 'Wdrożenie projektu na Vercel',       d: 'Strona online w ~2 minuty, za darmo' },
           { e: '🔑', t: 'Potrzebujesz 2 tokenów dostępu',   d: 'Pokażemy krok po kroku jak je zdobyć' },
         ],
         startBtn: 'Zaczynamy',

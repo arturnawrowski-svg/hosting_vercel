@@ -178,6 +178,16 @@ function VerGuide({ lang }) {
   );
 }
 
+// ─── cross-tab sync ───────────────────────────────────────────────────────────
+
+function markWizardSteps(keys) {
+  try {
+    const current = JSON.parse(localStorage.getItem('wizard_steps') || '{}');
+    keys.forEach(k => { current[k] = true; });
+    localStorage.setItem('wizard_steps', JSON.stringify(current));
+  } catch {}
+}
+
 // ─── constants ────────────────────────────────────────────────────────────────
 
 const FRAMEWORK_IDS = [null, 'vite', 'nextjs'];
@@ -290,6 +300,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme, lang = 'pl' })
         } else throw e;
       }
       setTask(2, 'done', repo.full_name);
+      markWizardSteps(['github-0']);
 
       // 3 — Upload files sequentially
       setTask(3, 'running');
@@ -321,6 +332,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme, lang = 'pl' })
         setTask(3, 'running', `${i + 1}/${total}`);
       }
       setTask(3, 'done', `${total}`);
+      markWizardSteps(['github-0', 'github-1', 'github-2']);
 
       // 4 — Create Vercel project
       setTask(4, 'running');
@@ -340,6 +352,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme, lang = 'pl' })
         } else throw e;
       }
       setTask(4, 'done', project.name);
+      markWizardSteps(['vercel-0', 'vercel-1', 'vercel-2', 'vercel-3']);
 
       // 5 — Trigger deploy
       setTask(5, 'running');
@@ -380,6 +393,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme, lang = 'pl' })
         }
       }
       setTask(6, 'done');
+      markWizardSteps(['vercel-4']);
 
       setLiveUrl(deployUrl
         ? (deployUrl.startsWith('http') ? deployUrl : `https://${deployUrl}`)
