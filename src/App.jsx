@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Rocket } from 'lucide-react';
 import DeployPipelineGuide from './components/DeployPipelineGuide';
 import DeployWizard from './components/DeployWizard';
 import PdfGuide from './components/PdfGuide';
@@ -47,16 +48,15 @@ function useLanguage() {
 
 export default function App() {
   const params      = new URLSearchParams(window.location.search);
-  const isWizardUrl = params.has('wizard'); // legacy URL access
+  const isWizardUrl = params.has('wizard');
   const isPdf       = params.has('pdf');
   const [dark, toggleTheme] = useTheme();
   const [lang, toggleLang]  = useLanguage();
-  const [wizardOpen, setWizardOpen] = useState(false);
+  const [wizardOpen, setWizardOpen]           = useState(false);
+  const [wizardCollapsed, setWizardCollapsed] = useState(false);
 
-  // Lifted from DeployPipelineGuide — shared between guide and wizard
   const [checked, setChecked] = useState({});
 
-  // Called by wizard when it completes a step → immediately checks off guide steps
   const onStepsDone = (keys) => {
     setChecked(prev => {
       const next = { ...prev };
@@ -71,7 +71,11 @@ export default function App() {
   }
   function goHome() { window.location.href = '/'; }
 
-  // Legacy: direct ?wizard URL (bookmarks, old links)
+  function openWizard() {
+    setWizardOpen(true);
+    setWizardCollapsed(false);
+  }
+
   if (isWizardUrl) return (
     <DeployWizard
       onClose={goHome}
@@ -87,7 +91,7 @@ export default function App() {
   const guideProps = {
     checked,
     setChecked,
-    onOpenWizard: () => setWizardOpen(true),
+    onOpenWizard: openWizard,
     onOpenPdf: openPdf,
     dark,
     toggleTheme,
@@ -96,30 +100,49 @@ export default function App() {
     wizardOpen,
   };
 
-  // Normal view (no wizard)
   if (!wizardOpen) return <DeployPipelineGuide {...guideProps} />;
 
-  // Split-screen: guide left + wizard right
+  // Split-screen: guide left + wizard right (or collapsed tab)
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-950">
-      {/* Left panel: Guide — narrower, hidden on mobile */}
-      <div className="hidden lg:flex lg:flex-col lg:flex-none lg:w-[420px] overflow-y-auto">
+      {/* Left panel: Guide — full width when collapsed, fixed 420px otherwise */}
+      <div className={
+        wizardCollapsed
+          ? 'flex flex-col flex-1 min-w-0 overflow-y-auto'
+          : 'hidden lg:flex lg:flex-col lg:flex-none lg:w-[420px] overflow-y-auto'
+      }>
         <DeployPipelineGuide {...guideProps} />
       </div>
 
       {/* Divider */}
-      <div className="hidden lg:block w-px bg-zinc-800 flex-shrink-0" />
+      {!wizardCollapsed && <div className="hidden lg:block w-px bg-zinc-800 flex-shrink-0" />}
 
-      {/* Right panel: Wizard — takes remaining space */}
-      <div className="flex-1 overflow-y-auto">
-        <DeployWizard
-          onClose={() => setWizardOpen(false)}
-          onStepsDone={onStepsDone}
-          dark={dark}
-          toggleTheme={toggleTheme}
-          lang={lang}
-        />
-      </div>
+      {/* Right: full wizard OR collapsed clickable tab */}
+      {wizardCollapsed ? (
+        <div
+          className="hidden lg:flex flex-col items-center justify-start gap-3 pt-6 w-11 flex-shrink-0 border-l border-zinc-800 bg-zinc-950 hover:bg-zinc-900 cursor-pointer transition-colors"
+          onClick={() => setWizardCollapsed(false)}
+          title="Otwórz Kreator Wdrożenia"
+        >
+          <Rocket className="w-4 h-4 text-indigo-400" />
+          <span
+            className="text-[10px] font-semibold tracking-[0.12em] text-zinc-500 hover:text-indigo-400 transition-colors uppercase"
+            style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+          >
+            Kreator
+          </span>
+        </div>
+      ) : (
+        <div className="flex-1 overflow-y-auto">
+          <DeployWizard
+            onClose={() => setWizardCollapsed(true)}
+            onStepsDone={onStepsDone}
+            dark={dark}
+            toggleTheme={toggleTheme}
+            lang={lang}
+          />
+        </div>
+      )}
     </div>
   );
 }
