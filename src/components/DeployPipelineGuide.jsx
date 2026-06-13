@@ -971,26 +971,18 @@ export default function DeployPipelineGuide({ onOpenWizard }) {
           );
         })()}
 
-        <footer className="mt-20 pt-8 border-t border-zinc-800 space-y-1">
-          <p className="text-[12px] text-zinc-400 leading-relaxed">
-            <span className="font-medium text-zinc-300">Eksport z Lovable:</span> Project Settings → Export to GitHub
-            <span className="text-zinc-600 mx-2">·</span>
-            <span className="font-medium text-zinc-300">AI Studio:</span> pobierz ZIP →{' '}
-            <code className="font-mono text-[11px] bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded text-zinc-300">git push</code>{' '}
-            ręcznie
+        <footer className="mt-20 pt-8 border-t border-zinc-800 text-center space-y-1.5">
+          <p className="text-sm text-zinc-400">
+            Created by{' '}
+            <a href="mailto:artur.nawrowski@gmail.com" className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">ArChi</a>
+            {' '}for{' '}
+            <a href="https://webtolearn.pl" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">WebToLearn</a>
           </p>
-          <div className="pt-5">
-            <p className="text-[11px] text-zinc-200">
-              Created by{' '}
-              <a href="mailto:artur.nawrowski@gmail.com" className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">ArChi</a>
-              {' '}for{' '}
-              <a href="https://webtolearn.pl" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">WebToLearn</a>
-            </p>
-            <p className="text-[10px] text-zinc-300 mt-0.5">
-              2026 Copyright by Krajowe Centrum Badań Sztucznej Inteligencji{' '}
-              <a href="https://kcbsi.pl" target="_blank" rel="noopener noreferrer" className="text-zinc-300 hover:text-white transition-colors">kcbsi.pl</a>
-            </p>
-          </div>
+          <p className="text-xs text-zinc-500">
+            Copyright by Krajowe Centrum Badań Sztucznej Inteligencji{' '}
+            <a href="https://kcbsi.pl" target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-white transition-colors">kcbsi.pl</a>
+            {' '}2026
+          </p>
         </footer>
       </main>
 
