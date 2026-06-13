@@ -807,7 +807,7 @@ export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf, dark, tog
         </div>
       </header>
 
-      <main className="relative max-w-3xl mx-auto px-4 sm:px-6 pt-12 sm:pt-20 pb-32">
+      <main className="relative max-w-3xl mx-auto px-4 sm:px-6 pt-24 sm:pt-32 pb-32">
         <section className="text-center mb-16 sm:mb-24" style={{ animation: 'fadeUp 0.6s ease-out' }}>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
