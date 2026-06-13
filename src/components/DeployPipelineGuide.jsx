@@ -707,20 +707,21 @@ const quickLinks = [
 ];
 
 /* ── Main component ── */
-export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf, dark, toggleTheme, lang, toggleLang }) {
+export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf, dark, toggleTheme, lang, toggleLang, checked, setChecked, wizardOpen }) {
   const t = getT(lang);
   const phases    = buildPhases(t);
   const stepHints = buildStepHints(t);
   const stepMeta  = buildStepMeta(t);
 
-  const [checked, setChecked] = useState(() => {
+  // Restore checked state from URL hash on first mount (shared URL feature)
+  useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.hash.slice(1));
       const s = params.get('s');
-      if (s) return decodeChecked(s);
+      if (s) setChecked(decodeChecked(s));
     } catch {}
-    return {};
-  });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const [openHints, setOpenHints] = useState({});
   const [copied, setCopied] = useState(false);
   const [noDomain, setNoDomain] = useState(false);
@@ -765,19 +766,6 @@ export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf, dark, tog
     const id = setInterval(check, 30000);
     return () => { cancelled = true; clearInterval(id); };
   }, [vercelToken]);
-
-  useEffect(() => {
-    const sync = () => {
-      try {
-        const steps = JSON.parse(localStorage.getItem('wizard_steps') || '{}');
-        if (Object.keys(steps).length > 0) setChecked(prev => ({ ...prev, ...steps }));
-      } catch {}
-    };
-    sync();
-    const handler = (e) => { if (e.key === 'wizard_steps' || e.key === null) sync(); };
-    window.addEventListener('storage', handler);
-    return () => window.removeEventListener('storage', handler);
-  }, []);
 
   useEffect(() => {
     const handler = (e) => { e.preventDefault(); setInstallPrompt(e); };
@@ -911,8 +899,8 @@ export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf, dark, tog
               <Progress value={progress} className="h-2 bg-zinc-900 [&>div]:bg-gradient-to-r [&>div]:from-indigo-500 [&>div]:to-indigo-400 [&>div]:transition-all [&>div]:duration-500" />
             </div>
 
-            {/* Wizard — icon only in header; main CTA is the banner */}
-            {onOpenWizard && (
+            {/* Wizard — icon only in header; hidden when wizard panel is already open */}
+            {onOpenWizard && !wizardOpen && (
               <Button onClick={onOpenWizard} variant="outline" size="sm" title={t.header.wizardTitle} className="bg-transparent border-zinc-800 hover:bg-zinc-900 hover:border-indigo-700/60 text-indigo-400/80 hover:text-indigo-300 h-9 w-9 px-0 flex-shrink-0 flex items-center justify-center">
                 <Rocket className="w-4 h-4" />
               </Button>
@@ -974,7 +962,7 @@ export default function DeployPipelineGuide({ onOpenWizard, onOpenPdf, dark, tog
       <main className="relative max-w-3xl mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-32">
 
         {/* ── Interaktywny Kreator — CTA banner ── */}
-        {!bannerDismissed && onOpenWizard && (
+        {!bannerDismissed && onOpenWizard && !wizardOpen && (
           <div className="mb-10" style={{ animation: 'fadeUp 0.5s ease-out 0.1s both' }}>
             <div className="relative overflow-hidden rounded-2xl shadow-xl shadow-indigo-500/20">
               <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-700" />

@@ -195,7 +195,8 @@ const CONFETTI = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f
 
 // ─── main export ──────────────────────────────────────────────────────────────
 
-export default function DeployWizard({ onBack, dark, toggleTheme, lang = 'pl' }) {
+export default function DeployWizard({ onBack, onClose, onStepsDone, dark, toggleTheme, lang = 'pl' }) {
+  const handleClose = onClose || onBack;
   const tw = getT(lang).wizard;
   const taskList = tw.deploying.tasks;
   const frameworks = FRAMEWORK_IDS.map((id, i) => ({ id, label: tw.project.frameworks[i] }));
@@ -216,6 +217,12 @@ export default function DeployWizard({ onBack, dark, toggleTheme, lang = 'pl' })
 
   const setTask = (i, s, msg = '') =>
     setTasks(prev => prev.map((t, idx) => idx === i ? { s, msg } : t));
+
+  // Syncs progress to both React state (split-screen) and localStorage (new-tab fallback)
+  const stepsDone = (keys) => {
+    onStepsDone?.(keys);
+    markWizardSteps(keys);
+  };
 
   // ── file handling ──────────────────────────────────────────────────────────
 
@@ -300,7 +307,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme, lang = 'pl' })
         } else throw e;
       }
       setTask(2, 'done', repo.full_name);
-      markWizardSteps(['github-0']);
+      stepsDone(['github-0']);
 
       // 3 — Upload files sequentially
       setTask(3, 'running');
@@ -332,7 +339,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme, lang = 'pl' })
         setTask(3, 'running', `${i + 1}/${total}`);
       }
       setTask(3, 'done', `${total}`);
-      markWizardSteps(['github-0', 'github-1', 'github-2']);
+      stepsDone(['github-0', 'github-1', 'github-2']);
 
       // 4 — Create Vercel project
       setTask(4, 'running');
@@ -352,7 +359,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme, lang = 'pl' })
         } else throw e;
       }
       setTask(4, 'done', project.name);
-      markWizardSteps(['vercel-0', 'vercel-1', 'vercel-2', 'vercel-3']);
+      stepsDone(['vercel-0', 'vercel-1', 'vercel-2', 'vercel-3']);
 
       // 5 — Trigger deploy
       setTask(5, 'running');
@@ -393,7 +400,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme, lang = 'pl' })
         }
       }
       setTask(6, 'done');
-      markWizardSteps(['vercel-4']);
+      stepsDone(['vercel-4']);
 
       setLiveUrl(deployUrl
         ? (deployUrl.startsWith('http') ? deployUrl : `https://${deployUrl}`)
@@ -443,7 +450,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme, lang = 'pl' })
             </button>
           )}
           <button
-            onClick={onBack}
+            onClick={handleClose}
             className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
           >
             <ChevronLeft className="w-3.5 h-3.5" />
@@ -821,7 +828,7 @@ export default function DeployWizard({ onBack, dark, toggleTheme, lang = 'pl' })
                 {tw.done.deployAnother}
               </button>
               <button
-                onClick={onBack}
+                onClick={handleClose}
                 className="block w-full text-sm text-zinc-500 hover:text-zinc-300 transition-colors py-2"
               >
                 {tw.done.backBtn}

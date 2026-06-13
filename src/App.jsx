@@ -46,32 +46,80 @@ function useLanguage() {
 }
 
 export default function App() {
-  const params   = new URLSearchParams(window.location.search);
-  const isWizard = params.has('wizard');
-  const isPdf    = params.has('pdf');
+  const params      = new URLSearchParams(window.location.search);
+  const isWizardUrl = params.has('wizard'); // legacy URL access
+  const isPdf       = params.has('pdf');
   const [dark, toggleTheme] = useTheme();
   const [lang, toggleLang]  = useLanguage();
+  const [wizardOpen, setWizardOpen] = useState(false);
 
-  function openWizard() {
-    const q = lang === 'en' ? '?wizard&lang=en' : '?wizard';
-    window.open(`${window.location.origin}/${q}`, '_blank');
-  }
+  // Lifted from DeployPipelineGuide — shared between guide and wizard
+  const [checked, setChecked] = useState({});
+
+  // Called by wizard when it completes a step → immediately checks off guide steps
+  const onStepsDone = (keys) => {
+    setChecked(prev => {
+      const next = { ...prev };
+      keys.forEach(k => { next[k] = true; });
+      return next;
+    });
+  };
+
   function openPdf() {
     const q = lang === 'en' ? '?pdf&lang=en' : '?pdf';
     window.open(`${window.location.origin}/${q}`, '_blank');
   }
-  function goHome()     { window.location.href = '/'; }
+  function goHome() { window.location.href = '/'; }
 
-  if (isWizard) return <DeployWizard onBack={goHome} dark={dark} toggleTheme={toggleTheme} lang={lang} toggleLang={toggleLang} />;
-  if (isPdf)    return <PdfGuide onClose={goHome} lang={lang} />;
-  return (
-    <DeployPipelineGuide
-      onOpenWizard={openWizard}
-      onOpenPdf={openPdf}
+  // Legacy: direct ?wizard URL (bookmarks, old links)
+  if (isWizardUrl) return (
+    <DeployWizard
+      onClose={goHome}
+      onStepsDone={onStepsDone}
       dark={dark}
       toggleTheme={toggleTheme}
       lang={lang}
-      toggleLang={toggleLang}
     />
+  );
+
+  if (isPdf) return <PdfGuide onClose={goHome} lang={lang} />;
+
+  const guideProps = {
+    checked,
+    setChecked,
+    onOpenWizard: () => setWizardOpen(true),
+    onOpenPdf: openPdf,
+    dark,
+    toggleTheme,
+    lang,
+    toggleLang,
+    wizardOpen,
+  };
+
+  // Normal view (no wizard)
+  if (!wizardOpen) return <DeployPipelineGuide {...guideProps} />;
+
+  // Split-screen: guide left + wizard right
+  return (
+    <div className="flex h-screen overflow-hidden bg-zinc-950">
+      {/* Left panel: Guide — hidden on mobile */}
+      <div className="hidden lg:flex lg:flex-col lg:flex-1 lg:min-w-0 overflow-y-auto">
+        <DeployPipelineGuide {...guideProps} />
+      </div>
+
+      {/* Divider */}
+      <div className="hidden lg:block w-px bg-zinc-800 flex-shrink-0" />
+
+      {/* Right panel: Wizard — full width on mobile */}
+      <div className="flex-1 lg:flex-none lg:w-[440px] overflow-y-auto">
+        <DeployWizard
+          onClose={() => setWizardOpen(false)}
+          onStepsDone={onStepsDone}
+          dark={dark}
+          toggleTheme={toggleTheme}
+          lang={lang}
+        />
+      </div>
+    </div>
   );
 }
