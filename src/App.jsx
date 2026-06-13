@@ -102,16 +102,16 @@ export default function App() {
   // Split-screen: guide left + wizard right
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-950">
-      {/* Left panel: Guide — hidden on mobile */}
-      <div className="hidden lg:flex lg:flex-col lg:flex-1 lg:min-w-0 overflow-y-auto">
+      {/* Left panel: Guide — narrower, hidden on mobile */}
+      <div className="hidden lg:flex lg:flex-col lg:flex-none lg:w-[420px] overflow-y-auto">
         <DeployPipelineGuide {...guideProps} />
       </div>
 
       {/* Divider */}
       <div className="hidden lg:block w-px bg-zinc-800 flex-shrink-0" />
 
-      {/* Right panel: Wizard — full width on mobile */}
-      <div className="flex-1 lg:flex-none lg:w-[440px] overflow-y-auto">
+      {/* Right panel: Wizard — takes remaining space */}
+      <div className="flex-1 overflow-y-auto">
         <DeployWizard
           onClose={() => setWizardOpen(false)}
           onStepsDone={onStepsDone}
