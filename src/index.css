@@ -3,17 +3,17 @@
 
 /* ── Light mode (default) — zinc scale odwrócona: ciemne → jasne, jasne → ciemne ── */
 :root {
-  --color-zinc-950: #ffffff;
-  --color-zinc-900: #f4f4f5;
-  --color-zinc-800: #e4e4e7;
-  --color-zinc-700: #d4d4d8;
-  --color-zinc-600: #a1a1aa;
-  --color-zinc-500: #71717a;
-  --color-zinc-400: #52525b;
-  --color-zinc-300: #3f3f46;
-  --color-zinc-200: #27272a;
-  --color-zinc-100: #18181b;
-  --color-zinc-50:  #09090b;
+  --color-zinc-950: #f7f7f7;
+  --color-zinc-900: #ebebeb;
+  --color-zinc-800: #e0e0e0;
+  --color-zinc-700: #cccccc;
+  --color-zinc-600: #999999;
+  --color-zinc-500: #666666;
+  --color-zinc-400: #444444;
+  --color-zinc-300: #2a2a2a;
+  --color-zinc-200: #1a1a1a;
+  --color-zinc-100: #0a0a0a;
+  --color-zinc-50:  #000000;
 
   /* Helper vars for themed inline elements */
   --grid-color: rgba(99, 102, 241, 0.10);

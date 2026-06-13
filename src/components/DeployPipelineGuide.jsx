@@ -382,7 +382,7 @@ const StepRow = ({ text, checked, onToggle, hint, hintOpen, onToggleHint, meta, 
       <button
         onClick={disabled || apiVerified ? undefined : onToggle}
         disabled={disabled || apiVerified}
-        className={`flex-1 text-left text-[13.5px] leading-relaxed transition-all duration-200 ${
+        className={`flex-1 text-left text-[15.5px] leading-relaxed transition-all duration-200 ${
           disabled
             ? 'text-zinc-600 cursor-not-allowed'
             : apiVerified
@@ -580,12 +580,12 @@ const PhaseCard = ({ phase, status, checked, onToggle, openHints, onToggleHint, 
             )}
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className={`text-[15px] sm:text-base font-semibold tracking-tight ${isLocked ? 'text-zinc-500' : 'text-zinc-100'}`}>{phase.platform}</h3>
+                <h3 className={`text-base sm:text-[17px] font-semibold tracking-tight ${isLocked ? 'text-zinc-500' : 'text-zinc-100'}`}>{phase.platform}</h3>
                 {phase.badge && (
                   <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 uppercase tracking-wider">{phase.badge}</span>
                 )}
               </div>
-              <p className="text-[12.5px] text-zinc-500 mt-0.5">{phase.description}</p>
+              <p className="text-[14px] text-zinc-500 mt-0.5">{phase.description}</p>
               {phase.descriptionEn && <p className="text-[10.5px] text-zinc-700 mt-0">{phase.descriptionEn}</p>}
             </div>
           </div>
